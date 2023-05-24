@@ -5,18 +5,18 @@ import (
 	"time"
 
 	hubspot "github.com/clarkmcc/go-hubspot"
-	"github.com/clarkmcc/go-hubspot/generated/v3/contacts"
+	"github.com/clarkmcc/go-hubspot/generated/v3/companies"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
-func tableHubSpotContact(ctx context.Context) *plugin.Table {
+func tableHubSpotCompany(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "hubspot_contact",
-		Description: "List of HubSpot Contacts.",
+		Name:        "hubspot_company",
+		Description: "List of HubSpot Companies.",
 		List: &plugin.ListConfig{
-			Hydrate: listContacts,
+			Hydrate: listCompanies,
 			KeyColumns: []*plugin.KeyColumn{
 				{
 					Name:    "archived",
@@ -25,7 +25,7 @@ func tableHubSpotContact(ctx context.Context) *plugin.Table {
 			},
 		},
 		Get: &plugin.GetConfig{
-			Hydrate:    getContact,
+			Hydrate:    getCompany,
 			KeyColumns: plugin.SingleColumn("id"),
 		},
 		Columns: []*plugin.Column{
@@ -56,17 +56,12 @@ func tableHubSpotContact(ctx context.Context) *plugin.Table {
 				Description: "",
 			},
 			{
-				Name:        "email",
+				Name:        "domain",
 				Type:        proto.ColumnType_STRING,
 				Description: "",
 			},
 			{
-				Name:        "first_name",
-				Type:        proto.ColumnType_STRING,
-				Description: "",
-			},
-			{
-				Name:        "last_name",
+				Name:        "name",
 				Type:        proto.ColumnType_STRING,
 				Description: "",
 			},
@@ -74,14 +69,14 @@ func tableHubSpotContact(ctx context.Context) *plugin.Table {
 				Name:        "properties",
 				Type:        proto.ColumnType_JSON,
 				Description: "",
-				Hydrate:     getContactProperties,
+				Hydrate:     getCompanyProperties,
 				Transform:   transform.FromField("Properties"),
 			},
 			{
 				Name:        "properties_with_history",
 				Type:        proto.ColumnType_JSON,
 				Description: "",
-				Hydrate:     getContactProperties,
+				Hydrate:     getCompanyProperties,
 				Transform:   transform.FromField("PropertiesWithHistory"),
 			},
 
@@ -90,31 +85,30 @@ func tableHubSpotContact(ctx context.Context) *plugin.Table {
 				Name:        "title",
 				Description: "Title of the resource.",
 				Type:        proto.ColumnType_STRING,
-				Transform:   transform.FromField("Id"),
+				Transform:   transform.FromField("Name"),
 			},
 		},
 	}
 }
 
-type Contact struct {
+type Company struct {
 	Id         string
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 	Archived   *bool
 	ArchivedAt *time.Time
-	Email      string
-	FirstName  string
-	LastName   string
+	Domain     string
+	Name       string
 }
 
-func listContacts(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listCompanies(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	authorizer, err := connect(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("hubspot_contact.listContacts", "connection_error", err)
+		plugin.Logger(ctx).Error("hubspot_company.listCompanies", "connection_error", err)
 		return nil, err
 	}
 	context := hubspot.WithAuthorizer(context.Background(), authorizer)
-	client := contacts.NewAPIClient(contacts.NewConfiguration())
+	client := companies.NewAPIClient(companies.NewConfiguration())
 
 	// Limiting the results
 	var maxLimit int32 = 100
@@ -135,11 +129,11 @@ func listContacts(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDat
 		if after == "" {
 			response, _, err := client.BasicApi.GetPage(context).Limit(maxLimit).Archived(archived).Execute()
 			if err != nil {
-				plugin.Logger(ctx).Error("hubspot_contact.listContacts", "api_error", err)
+				plugin.Logger(ctx).Error("hubspot_company.listCompanies", "api_error", err)
 				return nil, err
 			}
-			for _, contact := range response.Results {
-				d.StreamListItem(ctx, Contact{contact.Id, contact.CreatedAt, contact.UpdatedAt, contact.Archived, contact.ArchivedAt, contact.Properties["email"], contact.Properties["firstname"], contact.Properties["lastname"]})
+			for _, company := range response.Results {
+				d.StreamListItem(ctx, Company{company.Id, company.CreatedAt, company.UpdatedAt, company.Archived, company.ArchivedAt, company.Properties["domain"], company.Properties["name"]})
 
 				// Context can be cancelled due to manual cancellation or the limit has been hit
 				if d.RowsRemaining(ctx) == 0 {
@@ -153,11 +147,11 @@ func listContacts(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDat
 		} else {
 			response, _, err := client.BasicApi.GetPage(context).Limit(maxLimit).After(after).Archived(archived).Execute()
 			if err != nil {
-				plugin.Logger(ctx).Error("hubspot_contact.listContacts", "api_error", err)
+				plugin.Logger(ctx).Error("hubspot_company.listCompanies", "api_error", err)
 				return nil, err
 			}
-			for _, contact := range response.Results {
-				d.StreamListItem(ctx, Contact{contact.Id, contact.CreatedAt, contact.UpdatedAt, contact.Archived, contact.ArchivedAt, contact.Properties["email"], contact.Properties["firstname"], contact.Properties["lastname"]})
+			for _, company := range response.Results {
+				d.StreamListItem(ctx, Company{company.Id, company.CreatedAt, company.UpdatedAt, company.Archived, company.ArchivedAt, company.Properties["domain"], company.Properties["name"]})
 
 				// Context can be cancelled due to manual cancellation or the limit has been hit
 				if d.RowsRemaining(ctx) == 0 {
@@ -174,7 +168,7 @@ func listContacts(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDat
 	return nil, nil
 }
 
-func getContact(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func getCompany(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	id := d.EqualsQualString("id")
 
 	// check if id is empty
@@ -184,41 +178,41 @@ func getContact(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData)
 
 	authorizer, err := connect(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("hubspot_contact.getContact", "connection_error", err)
+		plugin.Logger(ctx).Error("hubspot_company.getCompany", "connection_error", err)
 		return nil, err
 	}
 	context := hubspot.WithAuthorizer(context.Background(), authorizer)
-	client := contacts.NewAPIClient(contacts.NewConfiguration())
+	client := companies.NewAPIClient(companies.NewConfiguration())
 
-	contact, _, err := client.BasicApi.GetByID(context, id).Execute()
+	company, _, err := client.BasicApi.GetByID(context, id).Execute()
 	if err != nil {
-		plugin.Logger(ctx).Error("hubspot_contact.getContact", "api_error", err)
+		plugin.Logger(ctx).Error("hubspot_company.getCompany", "api_error", err)
 		return nil, err
 	}
 
-	return Contact{contact.Id, contact.CreatedAt, contact.UpdatedAt, contact.Archived, contact.ArchivedAt, contact.Properties["email"], contact.Properties["firstname"], contact.Properties["lastname"]}, nil
+	return Company{company.Id, company.CreatedAt, company.UpdatedAt, company.Archived, company.ArchivedAt, company.Properties["domain"], company.Properties["name"]}, nil
 }
 
-func getContactProperties(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	id := h.Item.(Contact).Id
+func getCompanyProperties(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	id := h.Item.(Company).Id
 
 	authorizer, err := connect(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("hubspot_contact.getContactProperties", "connection_error", err)
+		plugin.Logger(ctx).Error("hubspot_company.getCompanyProperties", "connection_error", err)
 		return nil, err
 	}
 	context := hubspot.WithAuthorizer(context.Background(), authorizer)
-	client := contacts.NewAPIClient(contacts.NewConfiguration())
-	properties, err := listAllPropertiesByObjectType(ctx, d, "contact")
+	client := companies.NewAPIClient(companies.NewConfiguration())
+	properties, err := listAllPropertiesByObjectType(ctx, d, "company")
 	if err != nil {
 		return nil, err
 	}
 
-	contact, _, err := client.BasicApi.GetByID(context, id).PropertiesWithHistory(properties).Properties(properties).Execute()
+	company, _, err := client.BasicApi.GetByID(context, id).PropertiesWithHistory(properties).Properties(properties).Execute()
 	if err != nil {
-		plugin.Logger(ctx).Error("hubspot_contact.getContactProperties", "api_error", err)
+		plugin.Logger(ctx).Error("hubspot_company.getCompanyProperties", "api_error", err)
 		return nil, err
 	}
 
-	return contact.Properties, nil
+	return company, nil
 }

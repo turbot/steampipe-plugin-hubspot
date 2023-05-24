@@ -22,19 +22,11 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			ShouldRetryErrorFunc: shouldRetryError([]string{"429"}),
 		},
 		TableMap: map[string]*plugin.Table{
+			"hubspot_company": tableHubSpotCompany(ctx),
 			"hubspot_contact": tableHubSpotContact(ctx),
-			// "hubspot_acl_entry":       tableHubSpotACLEntry(ctx),
-			// "hubspot_backend":         tableHubSpotBackend(ctx),
-			// "hubspot_condition":       tableHubSpotCondition(ctx),
-			// "hubspot_data_center":     tableHubSpotDataCenter(ctx),
-			// "hubspot_dictionary":      tableHubSpotDictionary(ctx),
-			// "hubspot_health_check":    tableHubSpotHealthCheck(ctx),
-			// "hubspot_ip_range":        tableHubSpotIPRange(ctx),
-			// "hubspot_pool":            tableHubSpotPool(ctx),
-			// "hubspot_service":         tableHubSpotService(ctx),
-			// "hubspot_service_domain":  tableHubSpotServiceDomain(ctx),
-			// "hubspot_service_version": tableHubSpotServiceVersion(ctx),
-			// "hubspot_token":           tableHubSpotToken(ctx),
+			"hubspot_deal":    tableHubSpotDeal(ctx),
+			"hubspot_owner":   tableHubSpotOwner(ctx),
+			"hubspot_ticket":  tableHubSpotTicket(ctx),
 		},
 	}
 	return p
