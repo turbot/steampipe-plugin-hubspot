@@ -32,52 +32,73 @@ func tableHubSpotCompany(ctx context.Context) *plugin.Table {
 			{
 				Name:        "id",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The unique ID of the company.",
 				Transform:   transform.FromField("Id"),
 			},
 			{
 				Name:        "created_at",
 				Type:        proto.ColumnType_TIMESTAMP,
-				Description: "",
+				Description: "The timestamp when the company was created.",
 			},
 			{
-				Name:        "Updated_at",
+				Name:        "updated_at",
 				Type:        proto.ColumnType_TIMESTAMP,
-				Description: "",
+				Description: "The timestamp when the company was last updated.",
 			},
 			{
 				Name:        "archived",
 				Type:        proto.ColumnType_BOOL,
-				Description: "",
+				Description: "Indicates whether the company is archived or not.",
 			},
 			{
 				Name:        "archived_at",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The timestamp when the company was archived.",
 			},
 			{
 				Name:        "domain",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The domain associated with the company.",
 			},
 			{
 				Name:        "name",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The name of the company.",
 			},
 			{
 				Name:        "properties",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "The properties associated with the company.",
 				Hydrate:     getCompanyProperties,
 				Transform:   transform.FromField("Properties"),
 			},
 			{
 				Name:        "properties_with_history",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "The properties associated with the company including historical changes.",
 				Hydrate:     getCompanyProperties,
 				Transform:   transform.FromField("PropertiesWithHistory"),
+			},
+			{
+				Name:        "associations_with_contacts",
+				Type:        proto.ColumnType_JSON,
+				Description: "The associations of the company with contacts.",
+				Hydrate:     getCompanyAssociationsWithContacts,
+				Transform:   transform.FromValue(),
+			},
+			{
+				Name:        "associations_with_deals",
+				Type:        proto.ColumnType_JSON,
+				Description: "The associations of the company with deals.",
+				Hydrate:     getCompanyAssociationsWithDeals,
+				Transform:   transform.FromValue(),
+			},
+			{
+				Name:        "associations_with_tickets",
+				Type:        proto.ColumnType_JSON,
+				Description: "The associations of the company with tickets.",
+				Hydrate:     getCompanyAssociationsWithTickets,
+				Transform:   transform.FromValue(),
 			},
 
 			/// Steampipe standard columns
@@ -215,4 +236,40 @@ func getCompanyProperties(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 	}
 
 	return company, nil
+}
+
+func getCompanyAssociationsWithContacts(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	id := h.Item.(Company).Id
+
+	associatedIds, err := getAssociations(ctx, d, id, "company", "contact")
+	if err != nil {
+		plugin.Logger(ctx).Error("hubspot_company.getCompanyAssociationsWithContacts", "api_error", err)
+		return nil, err
+	}
+
+	return associatedIds, nil
+}
+
+func getCompanyAssociationsWithDeals(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	id := h.Item.(Company).Id
+
+	associatedIds, err := getAssociations(ctx, d, id, "company", "deal")
+	if err != nil {
+		plugin.Logger(ctx).Error("hubspot_company.getCompanyAssociationsWithDeals", "api_error", err)
+		return nil, err
+	}
+
+	return associatedIds, nil
+}
+
+func getCompanyAssociationsWithTickets(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	id := h.Item.(Company).Id
+
+	associatedIds, err := getAssociations(ctx, d, id, "company", "ticket")
+	if err != nil {
+		plugin.Logger(ctx).Error("hubspot_company.getCompanyAssociationsWithTickets", "api_error", err)
+		return nil, err
+	}
+
+	return associatedIds, nil
 }

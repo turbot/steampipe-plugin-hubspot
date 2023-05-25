@@ -32,57 +32,78 @@ func tableHubSpotContact(ctx context.Context) *plugin.Table {
 			{
 				Name:        "id",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The unique ID of the contact.",
 				Transform:   transform.FromField("Id"),
 			},
 			{
 				Name:        "created_at",
 				Type:        proto.ColumnType_TIMESTAMP,
-				Description: "",
+				Description: "The timestamp when the contact was created.",
 			},
 			{
-				Name:        "Updated_at",
+				Name:        "updated_at",
 				Type:        proto.ColumnType_TIMESTAMP,
-				Description: "",
+				Description: "The timestamp when the contact was last updated.",
 			},
 			{
 				Name:        "archived",
 				Type:        proto.ColumnType_BOOL,
-				Description: "",
+				Description: "Indicates whether the contact is archived or not.",
 			},
 			{
 				Name:        "archived_at",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The timestamp when the contact was archived.",
 			},
 			{
 				Name:        "email",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The email address of the contact.",
 			},
 			{
 				Name:        "first_name",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The first name of the contact.",
 			},
 			{
 				Name:        "last_name",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The last name of the contact.",
 			},
 			{
 				Name:        "properties",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "The properties associated with the contact.",
 				Hydrate:     getContactProperties,
-				Transform:   transform.FromField("Properties"),
+				Transform:   transform.FromValue(),
 			},
 			{
 				Name:        "properties_with_history",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
-				Hydrate:     getContactProperties,
-				Transform:   transform.FromField("PropertiesWithHistory"),
+				Description: "The properties associated with the contact including historical changes.",
+				Hydrate:     getContactPropertiesWithHistory,
+				Transform:   transform.FromValue(),
+			},
+			{
+				Name:        "associations_with_companies",
+				Type:        proto.ColumnType_JSON,
+				Description: "The associations of the contact with companies.",
+				Hydrate:     getContactAssociationsWithCompanies,
+				Transform:   transform.FromValue(),
+			},
+			{
+				Name:        "associations_with_deals",
+				Type:        proto.ColumnType_JSON,
+				Description: "The associations of the contact with deals.",
+				Hydrate:     getContactAssociationsWithDeals,
+				Transform:   transform.FromValue(),
+			},
+			{
+				Name:        "associations_with_tickets",
+				Type:        proto.ColumnType_JSON,
+				Description: "The associations of the contact with tickets.",
+				Hydrate:     getContactAssociationsWithTickets,
+				Transform:   transform.FromValue(),
 			},
 
 			/// Steampipe standard columns
@@ -214,11 +235,71 @@ func getContactProperties(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 		return nil, err
 	}
 
-	contact, _, err := client.BasicApi.GetByID(context, id).PropertiesWithHistory(properties).Properties(properties).Execute()
+	contact, _, err := client.BasicApi.GetByID(context, id).Properties(properties).Execute()
 	if err != nil {
 		plugin.Logger(ctx).Error("hubspot_contact.getContactProperties", "api_error", err)
 		return nil, err
 	}
 
 	return contact.Properties, nil
+}
+
+func getContactPropertiesWithHistory(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	id := h.Item.(Contact).Id
+
+	authorizer, err := connect(ctx, d)
+	if err != nil {
+		plugin.Logger(ctx).Error("hubspot_contact.getContactPropertiesWithHistory", "connection_error", err)
+		return nil, err
+	}
+	context := hubspot.WithAuthorizer(context.Background(), authorizer)
+	client := contacts.NewAPIClient(contacts.NewConfiguration())
+	properties, err := listAllPropertiesByObjectType(ctx, d, "contact")
+	if err != nil {
+		return nil, err
+	}
+
+	contact, _, err := client.BasicApi.GetByID(context, id).PropertiesWithHistory(properties).Execute()
+	if err != nil {
+		plugin.Logger(ctx).Error("hubspot_contact.getContactPropertiesWithHistory", "api_error", err)
+		return nil, err
+	}
+
+	return contact.PropertiesWithHistory, nil
+}
+
+func getContactAssociationsWithCompanies(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	id := h.Item.(Contact).Id
+
+	associatedIds, err := getAssociations(ctx, d, id, "contact", "company")
+	if err != nil {
+		plugin.Logger(ctx).Error("hubspot_contact.getContactAssociationsWithCompanies", "api_error", err)
+		return nil, err
+	}
+
+	return associatedIds, nil
+}
+
+func getContactAssociationsWithDeals(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	id := h.Item.(Contact).Id
+
+	associatedIds, err := getAssociations(ctx, d, id, "contact", "deal")
+	if err != nil {
+		plugin.Logger(ctx).Error("hubspot_contact.getContactAssociationsWithDeals", "api_error", err)
+		return nil, err
+	}
+
+	return associatedIds, nil
+}
+
+func getContactAssociationsWithTickets(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	id := h.Item.(Contact).Id
+
+	associatedIds, err := getAssociations(ctx, d, id, "contact", "ticket")
+	if err != nil {
+		plugin.Logger(ctx).Error("hubspot_contact.getContactAssociationsWithTickets", "api_error", err)
+		return nil, err
+	}
+
+	return associatedIds, nil
 }

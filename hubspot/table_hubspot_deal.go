@@ -32,67 +32,88 @@ func tableHubSpotDeal(ctx context.Context) *plugin.Table {
 			{
 				Name:        "id",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The unique ID of the deal.",
 				Transform:   transform.FromField("Id"),
 			},
 			{
 				Name:        "created_at",
 				Type:        proto.ColumnType_TIMESTAMP,
-				Description: "",
+				Description: "The timestamp when the deal was created.",
 			},
 			{
-				Name:        "Updated_at",
+				Name:        "updated_at",
 				Type:        proto.ColumnType_TIMESTAMP,
-				Description: "",
+				Description: "The timestamp when the deal was last updated.",
 			},
 			{
 				Name:        "archived",
 				Type:        proto.ColumnType_BOOL,
-				Description: "",
+				Description: "Indicates whether the deal is archived or not.",
 			},
 			{
 				Name:        "archived_at",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The timestamp when the deal was archived.",
 			},
 			{
 				Name:        "amount",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The amount associated with the deal.",
 			},
 			{
 				Name:        "deal_name",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The name of the deal.",
 			},
 			{
 				Name:        "pipeline",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The pipeline associated with the deal.",
 			},
 			{
 				Name:        "close_date",
 				Type:        proto.ColumnType_TIMESTAMP,
-				Description: "",
+				Description: "The expected close date of the deal.",
 			},
 			{
 				Name:        "deal_stage",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The stage of the deal.",
 			},
 			{
 				Name:        "properties",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "The properties associated with the deal.",
 				Hydrate:     getDealProperties,
 				Transform:   transform.FromField("Properties"),
 			},
 			{
 				Name:        "properties_with_history",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "The properties associated with the deal including historical changes.",
 				Hydrate:     getDealProperties,
 				Transform:   transform.FromField("PropertiesWithHistory"),
+			},
+			{
+				Name:        "associations_with_contacts",
+				Type:        proto.ColumnType_JSON,
+				Description: "The associations of the deal with contacts.",
+				Hydrate:     getDealAssociationsWithContacts,
+				Transform:   transform.FromValue(),
+			},
+			{
+				Name:        "associations_with_companies",
+				Type:        proto.ColumnType_JSON,
+				Description: "The associations of the deal with companies.",
+				Hydrate:     getDealAssociationsWithCompanies,
+				Transform:   transform.FromValue(),
+			},
+			{
+				Name:        "associations_with_tickets",
+				Type:        proto.ColumnType_JSON,
+				Description: "The associations of the deal with tickets.",
+				Hydrate:     getDealAssociationsWithTickets,
+				Transform:   transform.FromValue(),
 			},
 
 			/// Steampipe standard columns
@@ -233,4 +254,40 @@ func getDealProperties(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 	}
 
 	return deal, nil
+}
+
+func getDealAssociationsWithContacts(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	id := h.Item.(Deal).Id
+
+	associatedIds, err := getAssociations(ctx, d, id, "deal", "contact")
+	if err != nil {
+		plugin.Logger(ctx).Error("hubspot_deal.getDealAssociationsWithContacts", "api_error", err)
+		return nil, err
+	}
+
+	return associatedIds, nil
+}
+
+func getDealAssociationsWithCompanies(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	id := h.Item.(Deal).Id
+
+	associatedIds, err := getAssociations(ctx, d, id, "deal", "company")
+	if err != nil {
+		plugin.Logger(ctx).Error("hubspot_deal.getDealAssociationsWithCompanies", "api_error", err)
+		return nil, err
+	}
+
+	return associatedIds, nil
+}
+
+func getDealAssociationsWithTickets(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	id := h.Item.(Deal).Id
+
+	associatedIds, err := getAssociations(ctx, d, id, "deal", "ticket")
+	if err != nil {
+		plugin.Logger(ctx).Error("hubspot_deal.getDealAssociationsWithTickets", "api_error", err)
+		return nil, err
+	}
+
+	return associatedIds, nil
 }

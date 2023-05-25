@@ -9,6 +9,7 @@ import (
 	"github.com/clarkmcc/go-hubspot/generated/v1/oauth"
 
 	hubspot "github.com/clarkmcc/go-hubspot"
+	"github.com/clarkmcc/go-hubspot/generated/v3/objects"
 	"github.com/clarkmcc/go-hubspot/generated/v3/properties"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 )
@@ -24,10 +25,8 @@ func connect(ctx context.Context, d *plugin.QueryData) (*hubspot.TokenAuthorizer
 		return nil, err
 	}
 	if conn != nil {
-		plugin.Logger(ctx).Error("app")
 		return conn.(*hubspot.TokenAuthorizer), nil
 	} else {
-		plugin.Logger(ctx).Error("oauhth")
 		token, err := fetchOAuthToken(ctx, d)
 		if err != nil {
 			return nil, err
@@ -139,4 +138,45 @@ func listAllPropertiesByObjectType(ctx context.Context, d *plugin.QueryData, obj
 	d.ConnectionManager.Cache.Set(cacheKey, propertyNames)
 
 	return propertyNames, nil
+}
+
+func getAssociations(ctx context.Context, d *plugin.QueryData, id string, fromObjectType string, toObjectType string) ([]objects.AssociatedId, error) {
+	authorizer, err := connect(ctx, d)
+	if err != nil {
+		plugin.Logger(ctx).Error("getAssociations", "connection_error", err)
+		return nil, err
+	}
+	context := hubspot.WithAuthorizer(context.Background(), authorizer)
+	client := objects.NewAPIClient(objects.NewConfiguration())
+	after := ""
+	limit := int32(500)
+
+	var associatedIds []objects.AssociatedId
+	for {
+		if after == "" {
+			response, _, err := client.AssociationsApi.AssociationsGetAll(context, fromObjectType, id, toObjectType).Limit(limit).Execute()
+			if err != nil {
+				plugin.Logger(ctx).Error("getAssociations", "api_error", err)
+				return nil, err
+			}
+			associatedIds = append(associatedIds, response.Results...)
+			if !response.Paging.HasNext() {
+				break
+			}
+			after = response.Paging.Next.After
+		} else {
+			response, _, err := client.AssociationsApi.AssociationsGetAll(context, fromObjectType, id, toObjectType).After(after).Limit(limit).Execute()
+			if err != nil {
+				plugin.Logger(ctx).Error("getAssociations", "api_error", err)
+				return nil, err
+			}
+			associatedIds = append(associatedIds, response.Results...)
+			if !response.Paging.HasNext() {
+				break
+			}
+			after = response.Paging.Next.After
+		}
+	}
+
+	return associatedIds, nil
 }

@@ -32,49 +32,49 @@ func tableHubSpotOwner(ctx context.Context) *plugin.Table {
 			{
 				Name:        "id",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The unique ID of the owner.",
 				Transform:   transform.FromField("Id"),
 			},
 			{
 				Name:        "created_at",
 				Type:        proto.ColumnType_TIMESTAMP,
-				Description: "",
+				Description: "The timestamp when the owner was created.",
 			},
 			{
-				Name:        "Updated_at",
+				Name:        "updated_at",
 				Type:        proto.ColumnType_TIMESTAMP,
-				Description: "An IP address.",
+				Description: "The timestamp when the owner was last updated.",
 			},
 			{
 				Name:        "archived",
 				Type:        proto.ColumnType_BOOL,
-				Description: "",
+				Description: "Indicates whether the owner is archived or not.",
 			},
 			{
 				Name:        "email",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The email address associated with the owner.",
 			},
 			{
 				Name:        "first_name",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The first name of the person.",
 			},
 			{
 				Name:        "last_name",
 				Type:        proto.ColumnType_STRING,
-				Description: "",
+				Description: "The last name of the person.",
 			},
 			{
 				Name:        "user_id",
 				Type:        proto.ColumnType_INT,
-				Description: "",
+				Description: "The user ID associated with the owner.",
 				Transform:   transform.FromField("UserId"),
 			},
 			{
 				Name:        "teams",
 				Type:        proto.ColumnType_JSON,
-				Description: "",
+				Description: "The teams associated with the owner.",
 			},
 
 			/// Steampipe standard columns
