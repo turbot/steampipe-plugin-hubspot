@@ -91,6 +91,7 @@ func tableHubSpotBlogPost(ctx context.Context) *plugin.Table {
 				Name:        "created_by_id",
 				Type:        proto.ColumnType_STRING,
 				Description: "The ID of the user that created this Blog Post.",
+				Transform:   transform.FromField("CreatedById"),
 			},
 			{
 				Name:        "updated_by_id",

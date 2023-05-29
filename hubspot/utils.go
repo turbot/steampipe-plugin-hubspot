@@ -83,6 +83,7 @@ func fetchOAuthToken(ctx context.Context, d *plugin.QueryData) (*string, error) 
 		return nil, nil
 	}
 
+	// get the token from cache if available and not expired
 	cacheKey := refreshToken + clientID + clientSecret
 	if cachedData, ok := d.ConnectionManager.Cache.Get(cacheKey); ok {
 		tokenDetails := cachedData.(tokenInfo)
@@ -90,7 +91,7 @@ func fetchOAuthToken(ctx context.Context, d *plugin.QueryData) (*string, error) 
 			return &tokenDetails.Token, nil
 		}
 	}
-	plugin.Logger(ctx).Error("not cached")
+
 	apiClient := oauth.NewAPIClient(oauth.NewConfiguration())
 	resp, _, err := apiClient.TokensApi.CreateToken(context.Background()).GrantType("refresh_token").ClientId(clientID).ClientSecret(clientSecret).RefreshToken(refreshToken).Execute()
 	if err != nil {
