@@ -85,41 +85,6 @@ func tableHubSpotTicket(ctx context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Description: "The priority level of the ticket.",
 			},
-			{
-				Name:        "properties",
-				Type:        proto.ColumnType_JSON,
-				Description: "Additional properties or custom fields associated with the ticket.",
-				Hydrate:     getTicketProperties,
-				Transform:   transform.FromField("Properties"),
-			},
-			{
-				Name:        "properties_with_history",
-				Type:        proto.ColumnType_JSON,
-				Description: "Additional properties or custom fields associated with the ticket, including historical changes.",
-				Hydrate:     getTicketProperties,
-				Transform:   transform.FromField("PropertiesWithHistory"),
-			},
-			{
-				Name:        "associations_with_contacts",
-				Type:        proto.ColumnType_JSON,
-				Description: "The contacts associated with the ticket.",
-				Hydrate:     getTicketAssociationsWithContacts,
-				Transform:   transform.FromValue(),
-			},
-			{
-				Name:        "associations_with_companies",
-				Type:        proto.ColumnType_JSON,
-				Description: "The companies associated with the ticket.",
-				Hydrate:     getTicketAssociationsWithCompanies,
-				Transform:   transform.FromValue(),
-			},
-			{
-				Name:        "associations_with_deals",
-				Type:        proto.ColumnType_JSON,
-				Description: "The deals associated with the ticket.",
-				Hydrate:     getTicketAssociationsWithDeals,
-				Transform:   transform.FromValue(),
-			},
 
 			/// Steampipe standard columns
 			{
@@ -236,64 +201,4 @@ func getTicket(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 	}
 
 	return Ticket{ticket.Id, ticket.CreatedAt, ticket.UpdatedAt, ticket.Archived, ticket.ArchivedAt, ticket.Properties["content"], ticket.Properties["subject"], ticket.Properties["hs_pipeline"], ticket.Properties["hs_pipeline_stage"], ticket.Properties["hs_ticket_category"], ticket.Properties["hs_ticket_priority"]}, nil
-}
-
-func getTicketProperties(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	id := h.Item.(Ticket).Id
-
-	authorizer, err := connect(ctx, d)
-	if err != nil {
-		plugin.Logger(ctx).Error("hubspot_ticket.getTicketProperties", "connection_error", err)
-		return nil, err
-	}
-	context := hubspot.WithAuthorizer(context.Background(), authorizer)
-	client := tickets.NewAPIClient(tickets.NewConfiguration())
-	properties, err := listAllPropertiesByObjectType(ctx, d, "ticket")
-	if err != nil {
-		return nil, err
-	}
-
-	ticket, _, err := client.BasicApi.GetByID(context, id).PropertiesWithHistory(properties).Properties(properties).Execute()
-	if err != nil {
-		plugin.Logger(ctx).Error("hubspot_ticket.getTicketProperties", "api_error", err)
-		return nil, err
-	}
-
-	return ticket, nil
-}
-
-func getTicketAssociationsWithContacts(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	id := h.Item.(Ticket).Id
-
-	associatedIds, err := getAssociations(ctx, d, id, "ticket", "contact")
-	if err != nil {
-		plugin.Logger(ctx).Error("hubspot_ticket.getTicketAssociationsWithContacts", "api_error", err)
-		return nil, err
-	}
-
-	return associatedIds, nil
-}
-
-func getTicketAssociationsWithCompanies(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	id := h.Item.(Ticket).Id
-
-	associatedIds, err := getAssociations(ctx, d, id, "ticket", "company")
-	if err != nil {
-		plugin.Logger(ctx).Error("hubspot_ticket.getTicketAssociationsWithCompanies", "api_error", err)
-		return nil, err
-	}
-
-	return associatedIds, nil
-}
-
-func getTicketAssociationsWithDeals(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	id := h.Item.(Ticket).Id
-
-	associatedIds, err := getAssociations(ctx, d, id, "ticket", "deal")
-	if err != nil {
-		plugin.Logger(ctx).Error("hubspot_ticket.getTicketAssociationsWithDeals", "api_error", err)
-		return nil, err
-	}
-
-	return associatedIds, nil
 }

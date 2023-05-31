@@ -21,16 +21,37 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 		DefaultRetryConfig: &plugin.RetryConfig{
 			ShouldRetryErrorFunc: shouldRetryError([]string{"429"}),
 		},
-		TableMap: map[string]*plugin.Table{
-			"hubspot_blog_post": tableHubSpotBlogPost(ctx),
-			"hubspot_company":   tableHubSpotCompany(ctx),
-			"hubspot_contact":   tableHubSpotContact(ctx),
-			"hubspot_deal":      tableHubSpotDeal(ctx),
-			"hubspot_domain":    tableHubSpotDomain(ctx),
-			"hubspot_hub_db":    tableHubSpotHubDB(ctx),
-			"hubspot_owner":     tableHubSpotOwner(ctx),
-			"hubspot_ticket":    tableHubSpotTicket(ctx),
-		},
+		SchemaMode:   plugin.SchemaModeDynamic,
+		TableMapFunc: pluginTableDefinitions,
 	}
+
 	return p
+}
+
+func pluginTableDefinitions(ctx context.Context, d *plugin.TableMapData) (map[string]*plugin.Table, error) {
+
+	// set Connection and ConectionCache
+	queryData := &plugin.QueryData{
+		Connection:      d.Connection,
+		ConnectionCache: d.ConnectionCache,
+	}
+
+	companyPropertiesColumns, err := listAllPropertiesByObjectType(ctx, queryData, "company")
+	if err != nil {
+		return nil, err
+	}
+
+	// Initialize tables
+	tables := map[string]*plugin.Table{
+		"hubspot_blog_post": tableHubSpotBlogPost(ctx),
+		"hubspot_company":   tableHubSpotCompany(ctx, companyPropertiesColumns),
+		"hubspot_contact":   tableHubSpotContact(ctx),
+		"hubspot_deal":      tableHubSpotDeal(ctx),
+		"hubspot_domain":    tableHubSpotDomain(ctx),
+		"hubspot_hub_db":    tableHubSpotHubDB(ctx),
+		"hubspot_owner":     tableHubSpotOwner(ctx),
+		"hubspot_ticket":    tableHubSpotTicket(ctx),
+	}
+
+	return tables, nil
 }

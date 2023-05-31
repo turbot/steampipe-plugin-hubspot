@@ -80,41 +80,6 @@ func tableHubSpotDeal(ctx context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Description: "The stage of the deal.",
 			},
-			{
-				Name:        "properties",
-				Type:        proto.ColumnType_JSON,
-				Description: "The properties associated with the deal.",
-				Hydrate:     getDealProperties,
-				Transform:   transform.FromField("Properties"),
-			},
-			{
-				Name:        "properties_with_history",
-				Type:        proto.ColumnType_JSON,
-				Description: "The properties associated with the deal including historical changes.",
-				Hydrate:     getDealProperties,
-				Transform:   transform.FromField("PropertiesWithHistory"),
-			},
-			{
-				Name:        "associations_with_contacts",
-				Type:        proto.ColumnType_JSON,
-				Description: "The associations of the deal with contacts.",
-				Hydrate:     getDealAssociationsWithContacts,
-				Transform:   transform.FromValue(),
-			},
-			{
-				Name:        "associations_with_companies",
-				Type:        proto.ColumnType_JSON,
-				Description: "The associations of the deal with companies.",
-				Hydrate:     getDealAssociationsWithCompanies,
-				Transform:   transform.FromValue(),
-			},
-			{
-				Name:        "associations_with_tickets",
-				Type:        proto.ColumnType_JSON,
-				Description: "The associations of the deal with tickets.",
-				Hydrate:     getDealAssociationsWithTickets,
-				Transform:   transform.FromValue(),
-			},
 
 			/// Steampipe standard columns
 			{
@@ -230,64 +195,4 @@ func getDeal(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (i
 	}
 
 	return Deal{deal.Id, deal.CreatedAt, deal.UpdatedAt, deal.Archived, deal.ArchivedAt, deal.Properties["amount"], deal.Properties["dealname"], deal.Properties["pipeline"], deal.Properties["closedate"], deal.Properties["dealstage"]}, nil
-}
-
-func getDealProperties(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	id := h.Item.(Deal).Id
-
-	authorizer, err := connect(ctx, d)
-	if err != nil {
-		plugin.Logger(ctx).Error("hubspot_deal.getDealProperties", "connection_error", err)
-		return nil, err
-	}
-	context := hubspot.WithAuthorizer(context.Background(), authorizer)
-	client := deals.NewAPIClient(deals.NewConfiguration())
-	properties, err := listAllPropertiesByObjectType(ctx, d, "deal")
-	if err != nil {
-		return nil, err
-	}
-
-	deal, _, err := client.BasicApi.GetByID(context, id).PropertiesWithHistory(properties).Properties(properties).Execute()
-	if err != nil {
-		plugin.Logger(ctx).Error("hubspot_deal.getDealProperties", "api_error", err)
-		return nil, err
-	}
-
-	return deal, nil
-}
-
-func getDealAssociationsWithContacts(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	id := h.Item.(Deal).Id
-
-	associatedIds, err := getAssociations(ctx, d, id, "deal", "contact")
-	if err != nil {
-		plugin.Logger(ctx).Error("hubspot_deal.getDealAssociationsWithContacts", "api_error", err)
-		return nil, err
-	}
-
-	return associatedIds, nil
-}
-
-func getDealAssociationsWithCompanies(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	id := h.Item.(Deal).Id
-
-	associatedIds, err := getAssociations(ctx, d, id, "deal", "company")
-	if err != nil {
-		plugin.Logger(ctx).Error("hubspot_deal.getDealAssociationsWithCompanies", "api_error", err)
-		return nil, err
-	}
-
-	return associatedIds, nil
-}
-
-func getDealAssociationsWithTickets(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	id := h.Item.(Deal).Id
-
-	associatedIds, err := getAssociations(ctx, d, id, "deal", "ticket")
-	if err != nil {
-		plugin.Logger(ctx).Error("hubspot_deal.getDealAssociationsWithTickets", "api_error", err)
-		return nil, err
-	}
-
-	return associatedIds, nil
 }
