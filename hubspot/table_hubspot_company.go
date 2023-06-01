@@ -2,7 +2,6 @@ package hubspot
 
 import (
 	"context"
-	"time"
 
 	hubspot "github.com/clarkmcc/go-hubspot"
 	"github.com/clarkmcc/go-hubspot/generated/v3/companies"
@@ -26,7 +25,7 @@ func tableHubSpotCompany(ctx context.Context, companyPropertiesColumns []propert
 			},
 		},
 		Get: &plugin.GetConfig{
-			Hydrate:    getCompany,
+			Hydrate:    getCompany(ctx, companyPropertiesColumns),
 			KeyColumns: plugin.SingleColumn("id"),
 		},
 		Columns: companyColumns(companyPropertiesColumns, []*plugin.Column{
@@ -56,26 +55,21 @@ func tableHubSpotCompany(ctx context.Context, companyPropertiesColumns []propert
 				Type:        proto.ColumnType_STRING,
 				Description: "The timestamp when the company was archived.",
 			},
+			{
+				Name:        "associations",
+				Type:        proto.ColumnType_JSON,
+				Description: "The associations of the company.",
+			},
 
 			/// Steampipe standard columns
 			{
 				Name:        "title",
 				Description: "Title of the resource.",
 				Type:        proto.ColumnType_STRING,
-				Transform:   transform.FromField("Name"),
+				Transform:   transform.FromField("Id"),
 			},
 		}),
 	}
-}
-
-type Company struct {
-	Id         string
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
-	Archived   *bool
-	ArchivedAt *time.Time
-	Domain     string
-	Name       string
 }
 
 func listCompanies(ctx context.Context, companyPropertiesColumns []properties.Property) func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
@@ -108,9 +102,11 @@ func listCompanies(ctx context.Context, companyPropertiesColumns []properties.Pr
 			properties = append(properties, property.Name)
 		}
 
+		associations := []string{"contact", "deal", "ticket"}
+
 		for {
 			if after == "" {
-				response, _, err := client.BasicApi.GetPage(context).Limit(maxLimit).Archived(archived).Properties(properties).Execute()
+				response, _, err := client.BasicApi.GetPage(context).Limit(maxLimit).Archived(archived).Properties(properties).Associations(associations).Execute()
 				if err != nil {
 					plugin.Logger(ctx).Error("hubspot_company.listCompanies", "api_error", err)
 					return nil, err
@@ -128,7 +124,7 @@ func listCompanies(ctx context.Context, companyPropertiesColumns []properties.Pr
 				}
 				after = response.Paging.Next.After
 			} else {
-				response, _, err := client.BasicApi.GetPage(context).Limit(maxLimit).After(after).Archived(archived).Properties(properties).Execute()
+				response, _, err := client.BasicApi.GetPage(context).Limit(maxLimit).After(after).Archived(archived).Properties(properties).Associations(associations).Execute()
 				if err != nil {
 					plugin.Logger(ctx).Error("hubspot_company.listCompanies", "api_error", err)
 					return nil, err
@@ -152,29 +148,36 @@ func listCompanies(ctx context.Context, companyPropertiesColumns []properties.Pr
 	}
 }
 
-func getCompany(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	id := d.EqualsQualString("id")
+func getCompany(ctx context.Context, companyPropertiesColumns []properties.Property) func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	return func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+		id := d.EqualsQualString("id")
 
-	// check if id is empty
-	if id == "" {
-		return nil, nil
+		// check if id is empty
+		if id == "" {
+			return nil, nil
+		}
+
+		properties := []string{}
+		for _, property := range companyPropertiesColumns {
+			properties = append(properties, property.Name)
+		}
+
+		authorizer, err := connect(ctx, d)
+		if err != nil {
+			plugin.Logger(ctx).Error("hubspot_company.getCompany", "connection_error", err)
+			return nil, err
+		}
+		context := hubspot.WithAuthorizer(context.Background(), authorizer)
+		client := companies.NewAPIClient(companies.NewConfiguration())
+
+		company, _, err := client.BasicApi.GetByID(context, id).Properties(properties).Execute()
+		if err != nil {
+			plugin.Logger(ctx).Error("hubspot_company.getCompany", "api_error", err)
+			return nil, err
+		}
+
+		return *company, nil
 	}
-
-	authorizer, err := connect(ctx, d)
-	if err != nil {
-		plugin.Logger(ctx).Error("hubspot_company.getCompany", "connection_error", err)
-		return nil, err
-	}
-	context := hubspot.WithAuthorizer(context.Background(), authorizer)
-	client := companies.NewAPIClient(companies.NewConfiguration())
-
-	company, _, err := client.BasicApi.GetByID(context, id).Execute()
-	if err != nil {
-		plugin.Logger(ctx).Error("hubspot_company.getCompany", "api_error", err)
-		return nil, err
-	}
-
-	return Company{company.Id, company.CreatedAt, company.UpdatedAt, company.Archived, company.ArchivedAt, company.Properties["domain"], company.Properties["name"]}, nil
 }
 
 func companyColumns(companyPropertiesColumns []properties.Property, columns []*plugin.Column) []*plugin.Column {

@@ -92,65 +92,56 @@ where
   created_at > now() - interval '30 days';
 ```
 
-### Get deals associated with a specific company
+### List deals which are new business
 
 ```sql
 select
-  deal.id,
-  deal.title,
-  deal.created_at,
-  deal.archived,
-  deal.amount,
-  deal.deal_name,
-  deal.pipeline,
-  deal.deal_stage
+  id,
+  title,
+  created_at,
+  archived,
+  amount,
+  deal_name,
+  pipeline,
+  deal_stage
 from
-  hubspot_company as com,
-  hubspot_deal as deal,
-  jsonb_array_elements(associations_with_companies) as c
+  hubspot_deal
 where
-  c ->> 'id' = com.id
-  and name = 'newCompany';
+  dealtype = 'newbusiness';
 ```
 
-### Get deals associated with a specific contact
+### List deals where amount is more than $10000
 
 ```sql
 select
-  deal.id,
-  deal.title,
-  deal.created_at,
-  deal.archived,
-  deal.amount,
-  deal.deal_name,
-  deal.pipeline,
-  deal.deal_stage
+  id,
+  title,
+  created_at,
+  archived,
+  amount,
+  deal_name,
+  pipeline,
+  deal_stage
 from
-  hubspot_contact as con,
-  hubspot_deal as deal,
-  jsonb_array_elements(associations_with_contacts) as c
+  hubspot_deal
 where
-  c ->> 'id' = com.id
-  and first_name = 'Brian';
+  amount::int > 10000;
 ```
 
-### Get deals associated with a specific ticket
+### List deals which are in appointmentscheduled stage
 
 ```sql
 select
-  deal.id,
-  deal.title,
-  deal.created_at,
-  deal.archived,
-  deal.amount,
-  deal.deal_name,
-  deal.pipeline,
-  deal.deal_stage
+  id,
+  title,
+  created_at,
+  archived,
+  amount,
+  deal_name,
+  pipeline,
+  deal_stage
 from
-  hubspot_ticket as tik,
-  hubspot_deal as deal,
-  jsonb_array_elements(associations_with_tickets) as t
+  hubspot_deal
 where
-  t ->> 'id' = tik.id
-  and subject = 'ticket_subjects';
+  dealstage = 'appointmentscheduled';
 ```

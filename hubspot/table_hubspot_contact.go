@@ -2,21 +2,21 @@ package hubspot
 
 import (
 	"context"
-	"time"
 
 	hubspot "github.com/clarkmcc/go-hubspot"
 	"github.com/clarkmcc/go-hubspot/generated/v3/contacts"
+	"github.com/clarkmcc/go-hubspot/generated/v3/properties"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
-func tableHubSpotContact(ctx context.Context) *plugin.Table {
+func tableHubSpotContact(ctx context.Context, contactPropertiesColumns []properties.Property) *plugin.Table {
 	return &plugin.Table{
 		Name:        "hubspot_contact",
 		Description: "List of HubSpot Contacts.",
 		List: &plugin.ListConfig{
-			Hydrate: listContacts,
+			Hydrate: listContacts(ctx, contactPropertiesColumns),
 			KeyColumns: []*plugin.KeyColumn{
 				{
 					Name:    "archived",
@@ -25,10 +25,10 @@ func tableHubSpotContact(ctx context.Context) *plugin.Table {
 			},
 		},
 		Get: &plugin.GetConfig{
-			Hydrate:    getContact,
+			Hydrate:    getContact(ctx, contactPropertiesColumns),
 			KeyColumns: plugin.SingleColumn("id"),
 		},
-		Columns: []*plugin.Column{
+		Columns: contactColumns(contactPropertiesColumns, []*plugin.Column{
 			{
 				Name:        "id",
 				Type:        proto.ColumnType_STRING,
@@ -55,21 +55,6 @@ func tableHubSpotContact(ctx context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Description: "The timestamp when the contact was archived.",
 			},
-			{
-				Name:        "email",
-				Type:        proto.ColumnType_STRING,
-				Description: "The email address of the contact.",
-			},
-			{
-				Name:        "first_name",
-				Type:        proto.ColumnType_STRING,
-				Description: "The first name of the contact.",
-			},
-			{
-				Name:        "last_name",
-				Type:        proto.ColumnType_STRING,
-				Description: "The last name of the contact.",
-			},
 
 			/// Steampipe standard columns
 			{
@@ -78,109 +63,145 @@ func tableHubSpotContact(ctx context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("Id"),
 			},
-		},
+		}),
 	}
 }
 
-type Contact struct {
-	Id         string
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
-	Archived   *bool
-	ArchivedAt *time.Time
-	Email      string
-	FirstName  string
-	LastName   string
-}
-
-func listContacts(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	authorizer, err := connect(ctx, d)
-	if err != nil {
-		plugin.Logger(ctx).Error("hubspot_contact.listContacts", "connection_error", err)
-		return nil, err
-	}
-	context := hubspot.WithAuthorizer(context.Background(), authorizer)
-	client := contacts.NewAPIClient(contacts.NewConfiguration())
-
-	// Limiting the results
-	var maxLimit int32 = 100
-	if d.QueryContext.Limit != nil {
-		limit := int32(*d.QueryContext.Limit)
-		if limit < maxLimit {
-			maxLimit = limit
+func listContacts(ctx context.Context, contactPropertiesColumns []properties.Property) func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	return func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+		authorizer, err := connect(ctx, d)
+		if err != nil {
+			plugin.Logger(ctx).Error("hubspot_contact.listContacts", "connection_error", err)
+			return nil, err
 		}
-	}
-	var after string = ""
-	archived := false
+		context := hubspot.WithAuthorizer(context.Background(), authorizer)
+		client := contacts.NewAPIClient(contacts.NewConfiguration())
 
-	if d.EqualsQuals["archived"] != nil {
-		archived = d.EqualsQuals["archived"].GetBoolValue()
-	}
-
-	for {
-		if after == "" {
-			response, _, err := client.BasicApi.GetPage(context).Limit(maxLimit).Archived(archived).Execute()
-			if err != nil {
-				plugin.Logger(ctx).Error("hubspot_contact.listContacts", "api_error", err)
-				return nil, err
+		// Limiting the results
+		var maxLimit int32 = 100
+		if d.QueryContext.Limit != nil {
+			limit := int32(*d.QueryContext.Limit)
+			if limit < maxLimit {
+				maxLimit = limit
 			}
-			for _, contact := range response.Results {
-				d.StreamListItem(ctx, Contact{contact.Id, contact.CreatedAt, contact.UpdatedAt, contact.Archived, contact.ArchivedAt, contact.Properties["email"], contact.Properties["firstname"], contact.Properties["lastname"]})
-
-				// Context can be cancelled due to manual cancellation or the limit has been hit
-				if d.RowsRemaining(ctx) == 0 {
-					return nil, nil
-				}
-			}
-			if !response.Paging.HasNext() {
-				break
-			}
-			after = response.Paging.Next.After
-		} else {
-			response, _, err := client.BasicApi.GetPage(context).Limit(maxLimit).After(after).Archived(archived).Execute()
-			if err != nil {
-				plugin.Logger(ctx).Error("hubspot_contact.listContacts", "api_error", err)
-				return nil, err
-			}
-			for _, contact := range response.Results {
-				d.StreamListItem(ctx, Contact{contact.Id, contact.CreatedAt, contact.UpdatedAt, contact.Archived, contact.ArchivedAt, contact.Properties["email"], contact.Properties["firstname"], contact.Properties["lastname"]})
-
-				// Context can be cancelled due to manual cancellation or the limit has been hit
-				if d.RowsRemaining(ctx) == 0 {
-					return nil, nil
-				}
-			}
-			if !response.Paging.HasNext() {
-				break
-			}
-			after = response.Paging.Next.After
 		}
-	}
+		var after string = ""
+		archived := false
 
-	return nil, nil
+		if d.EqualsQuals["archived"] != nil {
+			archived = d.EqualsQuals["archived"].GetBoolValue()
+		}
+
+		properties := []string{}
+		for _, property := range contactPropertiesColumns {
+			properties = append(properties, property.Name)
+		}
+
+		for {
+			if after == "" {
+				response, _, err := client.BasicApi.GetPage(context).Limit(maxLimit).Archived(archived).Properties(properties).Execute()
+				if err != nil {
+					plugin.Logger(ctx).Error("hubspot_contact.listContacts", "api_error", err)
+					return nil, err
+				}
+				for _, contact := range response.Results {
+					d.StreamListItem(ctx, contact)
+
+					// Context can be cancelled due to manual cancellation or the limit has been hit
+					if d.RowsRemaining(ctx) == 0 {
+						return nil, nil
+					}
+				}
+				if !response.Paging.HasNext() {
+					break
+				}
+				after = response.Paging.Next.After
+			} else {
+				response, _, err := client.BasicApi.GetPage(context).Limit(maxLimit).After(after).Archived(archived).Properties(properties).Execute()
+				if err != nil {
+					plugin.Logger(ctx).Error("hubspot_contact.listContacts", "api_error", err)
+					return nil, err
+				}
+				for _, contact := range response.Results {
+					d.StreamListItem(ctx, contact)
+
+					// Context can be cancelled due to manual cancellation or the limit has been hit
+					if d.RowsRemaining(ctx) == 0 {
+						return nil, nil
+					}
+				}
+				if !response.Paging.HasNext() {
+					break
+				}
+				after = response.Paging.Next.After
+			}
+		}
+
+		return nil, nil
+	}
 }
 
-func getContact(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	id := d.EqualsQualString("id")
+func getContact(ctx context.Context, contactPropertiesColumns []properties.Property) func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	return func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+		id := d.EqualsQualString("id")
 
-	// check if id is empty
-	if id == "" {
+		// check if id is empty
+		if id == "" {
+			return nil, nil
+		}
+
+		properties := []string{}
+		for _, property := range contactPropertiesColumns {
+			properties = append(properties, property.Name)
+		}
+
+		authorizer, err := connect(ctx, d)
+		if err != nil {
+			plugin.Logger(ctx).Error("hubspot_contact.getContact", "connection_error", err)
+			return nil, err
+		}
+		context := hubspot.WithAuthorizer(context.Background(), authorizer)
+		client := contacts.NewAPIClient(contacts.NewConfiguration())
+
+		contact, _, err := client.BasicApi.GetByID(context, id).Properties(properties).Execute()
+		if err != nil {
+			plugin.Logger(ctx).Error("hubspot_contact.getContact", "api_error", err)
+			return nil, err
+		}
+
+		return *contact, nil
+	}
+}
+
+func contactColumns(companyPropertiesColumns []properties.Property, columns []*plugin.Column) []*plugin.Column {
+	return append(setContactDynamicColumns(companyPropertiesColumns), columns...)
+}
+
+func setContactDynamicColumns(properties []properties.Property) []*plugin.Column {
+	Columns := []*plugin.Column{}
+	for _, property := range properties {
+		column := &plugin.Column{
+			Name:        property.Name,
+			Description: property.Description,
+			//	Type:        proto.ColumnType_STRING,
+			Transform: transform.FromP(extractContactProperties, property.Name),
+		}
+		setDynamicColumnTypes(property, column)
+		Columns = append(Columns, column)
+	}
+
+	return Columns
+}
+
+func extractContactProperties(_ context.Context, d *transform.TransformData) (interface{}, error) {
+	ob := d.HydrateItem.(contacts.SimplePublicObjectWithAssociations).Properties
+	if ob == nil {
+		return nil, nil
+	}
+	param := d.Param.(string)
+	if ob[param] == "" {
 		return nil, nil
 	}
 
-	authorizer, err := connect(ctx, d)
-	if err != nil {
-		plugin.Logger(ctx).Error("hubspot_contact.getContact", "connection_error", err)
-		return nil, err
-	}
-	context := hubspot.WithAuthorizer(context.Background(), authorizer)
-	client := contacts.NewAPIClient(contacts.NewConfiguration())
-
-	contact, _, err := client.BasicApi.GetByID(context, id).Execute()
-	if err != nil {
-		plugin.Logger(ctx).Error("hubspot_contact.getContact", "api_error", err)
-		return nil, err
-	}
-
-	return Contact{contact.Id, contact.CreatedAt, contact.UpdatedAt, contact.Archived, contact.ArchivedAt, contact.Properties["email"], contact.Properties["firstname"], contact.Properties["lastname"]}, nil
+	return ob[param], nil
 }

@@ -21,7 +21,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 		DefaultRetryConfig: &plugin.RetryConfig{
 			ShouldRetryErrorFunc: shouldRetryError([]string{"429"}),
 		},
-		SchemaMode:   plugin.SchemaModeDynamic,
+		SchemaMode:   plugin.SchemaModeStatic,
 		TableMapFunc: pluginTableDefinitions,
 	}
 
@@ -36,7 +36,26 @@ func pluginTableDefinitions(ctx context.Context, d *plugin.TableMapData) (map[st
 		ConnectionCache: d.ConnectionCache,
 	}
 
+	// fetch all properties of company
 	companyPropertiesColumns, err := listAllPropertiesByObjectType(ctx, queryData, "company")
+	if err != nil {
+		return nil, err
+	}
+
+	// fetch all properties of contact
+	contactPropertiesColumns, err := listAllPropertiesByObjectType(ctx, queryData, "contact")
+	if err != nil {
+		return nil, err
+	}
+
+	// fetch all properties of deal
+	dealPropertiesColumns, err := listAllPropertiesByObjectType(ctx, queryData, "deal")
+	if err != nil {
+		return nil, err
+	}
+
+	// fetch all properties of ticket
+	ticketPropertiesColumns, err := listAllPropertiesByObjectType(ctx, queryData, "ticket")
 	if err != nil {
 		return nil, err
 	}
@@ -45,12 +64,12 @@ func pluginTableDefinitions(ctx context.Context, d *plugin.TableMapData) (map[st
 	tables := map[string]*plugin.Table{
 		"hubspot_blog_post": tableHubSpotBlogPost(ctx),
 		"hubspot_company":   tableHubSpotCompany(ctx, companyPropertiesColumns),
-		"hubspot_contact":   tableHubSpotContact(ctx),
-		"hubspot_deal":      tableHubSpotDeal(ctx),
+		"hubspot_contact":   tableHubSpotContact(ctx, contactPropertiesColumns),
+		"hubspot_deal":      tableHubSpotDeal(ctx, dealPropertiesColumns),
 		"hubspot_domain":    tableHubSpotDomain(ctx),
 		"hubspot_hub_db":    tableHubSpotHubDB(ctx),
 		"hubspot_owner":     tableHubSpotOwner(ctx),
-		"hubspot_ticket":    tableHubSpotTicket(ctx),
+		"hubspot_ticket":    tableHubSpotTicket(ctx, ticketPropertiesColumns),
 	}
 
 	return tables, nil

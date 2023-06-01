@@ -53,62 +53,87 @@ where
   created_at > now() - interval '30 days';
 ```
 
-### Get contacts associated with a specific company
+### List contacts who are from Queensland
 
 ```sql
 select
-  con.id,
-  con.title,
-  con.created_at,
-  con.archived,
-  con.email,
-  con.first_name,
-  con.last_name
+  id,
+  title,
+  created_at,
+  archived,
+  email,
+  firstname,
+  lastname
 from
-  hubspot_company as com,
-  hubspot_contact as con,
-  jsonb_array_elements(associations_with_companies) as c
+  hubspot_contact
 where
-  c ->> 'id' = com.id
-  and name = 'newCompany';
+  state = 'QLD';
 ```
 
-### Get contacts associated with a specific deal
+### List lead contacts
 
 ```sql
 select
-  con.id,
-  con.title,
-  con.created_at,
-  con.archived,
-  con.email,
-  con.first_name,
-  con.last_name
+  id,
+  title,
+  created_at,
+  archived,
+  email,
+  firstname,
+  lastname
 from
-  hubspot_deal as deal,
-  hubspot_contact as con,
-  jsonb_array_elements(associations_with_deals) as d
+  hubspot_contact
 where
-  d ->> 'id' = deal.id
-  and deal_name = 'final_deal';
+  lifecyclestage = 'lead';
 ```
 
-### Get contacts associated with a specific ticket
+### List lead contacts
 
 ```sql
 select
-  con.id,
-  con.title,
-  con.created_at,
-  con.archived,
-  con.email,
-  con.first_name,
-  con.last_name
+  id,
+  title,
+  created_at,
+  archived,
+  email,
+  firstname,
+  lastname
 from
-  hubspot_ticket as tik,
-  hubspot_contact as con,
-  jsonb_array_elements(associations_with_tickets) as t
+  hubspot_contact
 where
-  t ->> 'id' = tik.id
-  and subject = 'ticket_subjects';
+  lifecyclestage = 'lead';
+```
+
+### List contacts who has never closed any deal
+
+```sql
+select
+  id,
+  title,
+  created_at,
+  archived,
+  email,
+  firstname,
+  lastname
+from
+  hubspot_contact
+where
+  recent_deal_close_date is null;
+```
+
+### List contacts who are Salesperson
+
+```sql
+select
+  id,
+  title,
+  created_at,
+  archived,
+  email,
+  firstname,
+  lastname
+from
+  hubspot_contact
+where
+  jobtitle = 'Salesperson';
 ```
