@@ -9,29 +9,27 @@ In HubSpot, a Deal represents a potential sales opportunity or a specific busine
 ```sql
 select
   id,
-  title,
   created_at,
   archived,
   amount,
-  deal_name,
+  dealname,
   pipeline,
-  deal_stage
+  dealstage
 from
   hubspot_deal;
 ```
 
-### List deals which are not in default pipeline
+### List deals which are not in the default pipeline
 
 ```sql
 select
   id,
-  title,
   created_at,
   archived,
   amount,
-  deal_name,
+  dealname,
   pipeline,
-  deal_stage
+  dealstage
 from
   hubspot_deal
 where
@@ -43,17 +41,16 @@ where
 ```sql
 select
   id,
-  title,
   created_at,
   archived,
   amount,
-  deal_name,
+  dealname,
   pipeline,
-  deal_stage
+  dealstage
 from
   hubspot_deal
 where
-  close_date <= now();
+  closedate <= now();
 ```
 
 ### List all archived deals
@@ -61,85 +58,80 @@ where
 ```sql
 select
   id,
-  title,
   created_at,
   archived,
   amount,
-  deal_name,
+  dealname,
   pipeline,
-  deal_stage
+  dealstage
 from
   hubspot_deal
 where
   archived;
 ```
 
-### List deals created in last 30 days
+### List deals created in the last 30 days
 
 ```sql
 select
   id,
-  title,
   created_at,
   archived,
   amount,
-  deal_name,
+  dealname,
   pipeline,
-  deal_stage
+  dealstage
 from
   hubspot_deal
 where
   created_at > now() - interval '30 days';
 ```
 
-### List deals which are new business
+### List deals which are a new business
 
 ```sql
 select
   id,
-  title,
   created_at,
   archived,
   amount,
-  deal_name,
+  dealname,
   pipeline,
-  deal_stage
+  dealstage
 from
   hubspot_deal
 where
   dealtype = 'newbusiness';
 ```
 
-### List deals where amount is more than $10000
+### List deals where the amount is more than $10000
 
 ```sql
 select
   id,
-  title,
   created_at,
   archived,
   amount,
-  deal_name,
+  dealname,
   pipeline,
-  deal_stage
+  dealstage
 from
   hubspot_deal
 where
-  amount::int > 10000;
+  amount > 10000;
 ```
 
-### List deals which are in appointmentscheduled stage
+### List deals which are in an appointment-scheduled stage
 
 ```sql
 select
   id,
-  title,
   created_at,
   archived,
   amount,
-  deal_name,
+  dealname,
   pipeline,
-  deal_stage
+  dealstage
 from
   hubspot_deal
 where

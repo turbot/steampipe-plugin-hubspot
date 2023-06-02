@@ -39,24 +39,28 @@ func pluginTableDefinitions(ctx context.Context, d *plugin.TableMapData) (map[st
 	// fetch all properties of company
 	companyPropertiesColumns, err := listAllPropertiesByObjectType(ctx, queryData, "company")
 	if err != nil {
+		plugin.Logger(ctx).Error("listAllPropertiesByObjectType", "companyPropertiesColumns", err)
 		return nil, err
 	}
 
 	// fetch all properties of contact
 	contactPropertiesColumns, err := listAllPropertiesByObjectType(ctx, queryData, "contact")
 	if err != nil {
+		plugin.Logger(ctx).Error("listAllPropertiesByObjectType", "contactPropertiesColumns", err)
 		return nil, err
 	}
 
 	// fetch all properties of deal
 	dealPropertiesColumns, err := listAllPropertiesByObjectType(ctx, queryData, "deal")
 	if err != nil {
+		plugin.Logger(ctx).Error("listAllPropertiesByObjectType", "dealPropertiesColumns", err)
 		return nil, err
 	}
 
 	// fetch all properties of ticket
 	ticketPropertiesColumns, err := listAllPropertiesByObjectType(ctx, queryData, "ticket")
 	if err != nil {
+		plugin.Logger(ctx).Error("listAllPropertiesByObjectType", "ticketPropertiesColumns", err)
 		return nil, err
 	}
 

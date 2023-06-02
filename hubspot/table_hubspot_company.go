@@ -55,11 +55,6 @@ func tableHubSpotCompany(ctx context.Context, companyPropertiesColumns []propert
 				Type:        proto.ColumnType_STRING,
 				Description: "The timestamp when the company was archived.",
 			},
-			{
-				Name:        "associations",
-				Type:        proto.ColumnType_JSON,
-				Description: "The associations of the company.",
-			},
 
 			/// Steampipe standard columns
 			{
@@ -97,16 +92,15 @@ func listCompanies(ctx context.Context, companyPropertiesColumns []properties.Pr
 			archived = d.EqualsQuals["archived"].GetBoolValue()
 		}
 
+		// get all the property names
 		properties := []string{}
 		for _, property := range companyPropertiesColumns {
 			properties = append(properties, property.Name)
 		}
 
-		associations := []string{"contact", "deal", "ticket"}
-
 		for {
 			if after == "" {
-				response, _, err := client.BasicApi.GetPage(context).Limit(maxLimit).Archived(archived).Properties(properties).Associations(associations).Execute()
+				response, _, err := client.BasicApi.GetPage(context).Limit(maxLimit).Archived(archived).Properties(properties).Execute()
 				if err != nil {
 					plugin.Logger(ctx).Error("hubspot_company.listCompanies", "api_error", err)
 					return nil, err
@@ -124,7 +118,7 @@ func listCompanies(ctx context.Context, companyPropertiesColumns []properties.Pr
 				}
 				after = response.Paging.Next.After
 			} else {
-				response, _, err := client.BasicApi.GetPage(context).Limit(maxLimit).After(after).Archived(archived).Properties(properties).Associations(associations).Execute()
+				response, _, err := client.BasicApi.GetPage(context).Limit(maxLimit).After(after).Archived(archived).Properties(properties).Execute()
 				if err != nil {
 					plugin.Logger(ctx).Error("hubspot_company.listCompanies", "api_error", err)
 					return nil, err
@@ -157,6 +151,7 @@ func getCompany(ctx context.Context, companyPropertiesColumns []properties.Prope
 			return nil, nil
 		}
 
+		// get all the property names
 		properties := []string{}
 		for _, property := range companyPropertiesColumns {
 			properties = append(properties, property.Name)

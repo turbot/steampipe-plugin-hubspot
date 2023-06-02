@@ -92,7 +92,7 @@ where
   not allow_child_tables;
 ```
 
-### List DBs created in last 30 days
+### List DBs created in the last 30 days
 
 ```sql
 select

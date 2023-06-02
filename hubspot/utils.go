@@ -33,7 +33,7 @@ func connectAppTokenUncached(ctx context.Context, d *plugin.QueryData, _ *plugin
 	}
 
 	if appToken == "" {
-		return nil, errors.New("private_app_token must be configured")
+		return nil, errors.New("'private_app_token' must be set in the connection configuration. Edit your connection configuration file and then restart Steampipe.")
 	}
 
 	authorizer := hubspot.NewTokenAuthorizer(appToken)
@@ -63,7 +63,7 @@ func setDynamicColumnTypes(property properties.Property, column *plugin.Column) 
 	case "string":
 		column.Type = proto.ColumnType_STRING
 	case "number":
-		column.Type = proto.ColumnType_STRING
+		column.Type = proto.ColumnType_DOUBLE
 	case "bool":
 		column.Type = proto.ColumnType_BOOL
 	case "datetime":

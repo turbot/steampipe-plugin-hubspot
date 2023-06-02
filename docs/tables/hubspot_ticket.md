@@ -9,33 +9,31 @@ In the context of customer support or service management, a Ticket refers to a r
 ```sql
 select
   id,
-  title,
   created_at,
   archived,
   content,
-  pipeline,
-  pipeline_stage,
-  ticket_priority
+  hs_pipeline,
+  hs_pipeline_stage,
+  hs_ticket_priority
 from
   hubspot_ticket;
 ```
 
-### List high priority tickets
+### List high-priority tickets
 
 ```sql
 select
   id,
-  title,
   created_at,
   archived,
   content,
-  pipeline,
-  pipeline_stage,
-  ticket_priority
+  hs_pipeline,
+  hs_pipeline_stage,
+  hs_ticket_priority
 from
-  hubspot_ticket
+  hubspot_ticket;
 where
-  ticket_priority = 'HIGH';
+  hs_ticket_priority = 'HIGH';
 ```
 
 ### List all archived tickets
@@ -43,96 +41,65 @@ where
 ```sql
 select
   id,
-  title,
   created_at,
   archived,
   content,
-  pipeline,
-  pipeline_stage,
-  ticket_priority
+  hs_pipeline,
+  hs_pipeline_stage,
+  hs_ticket_priority
 from
   hubspot_ticket
 where
   archived;
 ```
 
-### List tickets created in last 30 days
+### List tickets created in the last 30 days
 
 ```sql
 select
   id,
-  title,
   created_at,
   archived,
   content,
-  pipeline,
-  pipeline_stage,
-  ticket_priority
+  hs_pipeline,
+  hs_pipeline_stage,
+  hs_ticket_priority
 from
   hubspot_ticket
 where
   created_at > now() - interval '30 days';
 ```
 
-### Get tickets associated with a specific company
+### List tickets which are submitted via phone
 
 ```sql
 select
-  tik.id,
-  tik.title,
-  tik.created_at,
-  tik.archived,
-  tik.content,
-  tik.pipeline,
-  tik.pipeline_stage,
-  tik.ticket_priority
+  id,
+  created_at,
+  archived,
+  content,
+  hs_pipeline,
+  hs_pipeline_stage,
+  hs_ticket_priority
 from
-  hubspot_company as com,
-  hubspot_ticket as tik,
-  jsonb_array_elements(associations_with_companies) as c
+  hubspot_ticket
 where
-  c ->> 'id' = com.id
-  and name = 'newCompany';
+  source_type = 'PHONE';
 ```
 
-### Get tickets associated with a specific contact
+### List unclosed tickets
 
 ```sql
 select
-  tik.id,
-  tik.title,
-  tik.created_at,
-  tik.archived,
-  tik.content,
-  tik.pipeline,
-  tik.pipeline_stage,
-  tik.ticket_priority
+  id,
+  created_at,
+  archived,
+  content,
+  hs_pipeline,
+  hs_pipeline_stage,
+  hs_ticket_priority
 from
-  hubspot_contact as con,
-  hubspot_ticket as tik,
-  jsonb_array_elements(associations_with_contacts) as c
+  hubspot_ticket
 where
-  c ->> 'id' = con.id
-  and first_name = 'Brian';
-```
-
-### Get tickets associated with a specific deal
-
-```sql
-select
-  tik.id,
-  tik.title,
-  tik.created_at,
-  tik.archived,
-  tik.content,
-  tik.pipeline,
-  tik.pipeline_stage,
-  tik.ticket_priority
-from
-  hubspot_deal as deal,
-  hubspot_ticket as tik,
-  jsonb_array_elements(associations_with_deals) as d
-where
-  d ->> 'id' = deal.id
-  and deal_name = 'final_deal';
+  time_to_close is null;
 ```

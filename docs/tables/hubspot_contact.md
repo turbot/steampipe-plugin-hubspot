@@ -9,12 +9,11 @@ In HubSpot, a Contact refers to an individual person or a potential customer wit
 ```sql
 select
   id,
-  title,
   created_at,
   archived,
   email,
-  first_name,
-  last_name
+  firstname,
+  lastname
 from
   hubspot_contact;
 ```
@@ -24,29 +23,27 @@ from
 ```sql
 select
   id,
-  title,
   created_at,
   archived,
   email,
-  first_name,
-  last_name
+  firstname,
+  lastname
 from
   hubspot_contact
 where
   archived;
 ```
 
-### List contacts created in last 30 days
+### List contacts created in the last 30 days
 
 ```sql
 select
   id,
-  title,
   created_at,
   archived,
   email,
-  first_name,
-  last_name
+  firstname,
+  lastname
 from
   hubspot_contact
 where
@@ -58,7 +55,6 @@ where
 ```sql
 select
   id,
-  title,
   created_at,
   archived,
   email,
@@ -75,7 +71,6 @@ where
 ```sql
 select
   id,
-  title,
   created_at,
   archived,
   email,
@@ -87,29 +82,11 @@ where
   lifecyclestage = 'lead';
 ```
 
-### List lead contacts
+### List contacts who have never closed any deal
 
 ```sql
 select
   id,
-  title,
-  created_at,
-  archived,
-  email,
-  firstname,
-  lastname
-from
-  hubspot_contact
-where
-  lifecyclestage = 'lead';
-```
-
-### List contacts who has never closed any deal
-
-```sql
-select
-  id,
-  title,
   created_at,
   archived,
   email,
@@ -121,12 +98,11 @@ where
   recent_deal_close_date is null;
 ```
 
-### List contacts who are Salesperson
+### List contacts who are Salespersons
 
 ```sql
 select
   id,
-  title,
   created_at,
   archived,
   email,

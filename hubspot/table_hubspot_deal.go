@@ -92,6 +92,7 @@ func listDeals(ctx context.Context, dealPropertiesColumns []properties.Property)
 			archived = d.EqualsQuals["archived"].GetBoolValue()
 		}
 
+		// get all the property names
 		properties := []string{}
 		for _, property := range dealPropertiesColumns {
 			properties = append(properties, property.Name)
@@ -150,6 +151,7 @@ func getDeal(ctx context.Context, dealPropertiesColumns []properties.Property) f
 			return nil, nil
 		}
 
+		// get all the property names
 		properties := []string{}
 		for _, property := range dealPropertiesColumns {
 			properties = append(properties, property.Name)

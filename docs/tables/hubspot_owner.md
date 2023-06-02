@@ -38,7 +38,7 @@ where
   archived;
 ```
 
-### List users created in last 30 days
+### List users created in the last 30 days
 
 ```sql
 select

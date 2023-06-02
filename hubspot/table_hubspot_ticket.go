@@ -92,6 +92,7 @@ func listTickets(ctx context.Context, ticketPropertiesColumns []properties.Prope
 			archived = d.EqualsQuals["archived"].GetBoolValue()
 		}
 
+		// get all the property names
 		properties := []string{}
 		for _, property := range ticketPropertiesColumns {
 			properties = append(properties, property.Name)
@@ -150,6 +151,7 @@ func getTicket(ctx context.Context, ticketPropertiesColumns []properties.Propert
 			return nil, nil
 		}
 
+		// get all the property names
 		properties := []string{}
 		for _, property := range ticketPropertiesColumns {
 			properties = append(properties, property.Name)

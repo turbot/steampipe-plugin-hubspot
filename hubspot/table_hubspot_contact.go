@@ -92,6 +92,7 @@ func listContacts(ctx context.Context, contactPropertiesColumns []properties.Pro
 			archived = d.EqualsQuals["archived"].GetBoolValue()
 		}
 
+		// get all the property names
 		properties := []string{}
 		for _, property := range contactPropertiesColumns {
 			properties = append(properties, property.Name)
@@ -150,6 +151,7 @@ func getContact(ctx context.Context, contactPropertiesColumns []properties.Prope
 			return nil, nil
 		}
 
+		// get all the property names
 		properties := []string{}
 		for _, property := range contactPropertiesColumns {
 			properties = append(properties, property.Name)

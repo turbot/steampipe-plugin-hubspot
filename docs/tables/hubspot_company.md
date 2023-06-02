@@ -9,7 +9,6 @@ In HubSpot, the Company object represents a company or organization with which y
 ```sql
 select
   id,
-  title,
   created_at,
   archived,
   domain,
@@ -23,7 +22,6 @@ from
 ```sql
 select
   id,
-  title,
   created_at,
   archived,
   domain,
@@ -39,7 +37,6 @@ where
 ```sql
 select
   id,
-  title,
   created_at,
   archived,
   domain,
@@ -50,12 +47,11 @@ where
   is_public;
 ```
 
-### List companies located in delhi
+### List companies located in Delhi
 
 ```sql
 select
   id,
-  title,
   created_at,
   archived,
   domain,
@@ -71,7 +67,6 @@ where
 ```sql
 select
   id,
-  title,
   created_at,
   archived,
   domain,
@@ -82,12 +77,11 @@ where
   type = 'VENDOR';
 ```
 
-### List companies with number of employee less than 200
+### List companies with a number of employees less than 200
 
 ```sql
 select
   id,
-  title,
   created_at,
   archived,
   domain,
@@ -103,7 +97,6 @@ where
 ```sql
 select
   id,
-  title,
   created_at,
   archived,
   domain,
@@ -114,12 +107,11 @@ where
   industry = 'INFORMATION_TECHNOLOGY_AND_SERVICES';
 ```
 
-### List companies created in last 30 days
+### List companies created in the last 30 days
 
 ```sql
 select
   id,
-  title,
   created_at,
   archived,
   domain,
