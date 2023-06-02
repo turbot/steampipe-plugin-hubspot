@@ -29,7 +29,7 @@ You may specify the Private App Token to authenticate:
 
 ```hcl
 connection "hubspot" {
-  plugin    = "hubspot"
+  plugin = "hubspot"
 
   # Authentication information
   private_app_token = "pat-na1-70271006-11d8-4a5d-9169-b12f4327e5b"

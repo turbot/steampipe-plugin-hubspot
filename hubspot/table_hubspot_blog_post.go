@@ -86,6 +86,7 @@ func tableHubSpotBlogPost(ctx context.Context) *plugin.Table {
 				Name:        "ab_test_id",
 				Type:        proto.ColumnType_STRING,
 				Description: "The ID of the A/B test this Blog Post is associated with.",
+				Transform:   transform.FromField("AbTestId"),
 			},
 			{
 				Name:        "created_by_id",
@@ -97,6 +98,7 @@ func tableHubSpotBlogPost(ctx context.Context) *plugin.Table {
 				Name:        "updated_by_id",
 				Type:        proto.ColumnType_STRING,
 				Description: "The ID of the user that updated this Blog Post.",
+				Transform:   transform.FromField("UpdatedById"),
 			},
 			{
 				Name:        "domain",
@@ -112,6 +114,7 @@ func tableHubSpotBlogPost(ctx context.Context) *plugin.Table {
 				Name:        "folder_id",
 				Type:        proto.ColumnType_STRING,
 				Description: "The folder ID.",
+				Transform:   transform.FromField("FolderId"),
 			},
 			{
 				Name:        "widget_containers",
@@ -132,6 +135,7 @@ func tableHubSpotBlogPost(ctx context.Context) *plugin.Table {
 				Name:        "translated_from_id",
 				Type:        proto.ColumnType_STRING,
 				Description: "ID of the primary blog post this object was translated from.",
+				Transform:   transform.FromField("TranslatedFromId"),
 			},
 			{
 				Name:        "translations",
@@ -147,6 +151,7 @@ func tableHubSpotBlogPost(ctx context.Context) *plugin.Table {
 				Name:        "dynamic_page_data_source_id",
 				Type:        proto.ColumnType_STRING,
 				Description: "The ID of the dynamic data source for the page.",
+				Transform:   transform.FromField("DynamicPageDataSourceId"),
 			},
 			{
 				Name:        "blog_author_id",
@@ -208,6 +213,7 @@ func tableHubSpotBlogPost(ctx context.Context) *plugin.Table {
 				Name:        "page_expiry_redirect_id",
 				Type:        proto.ColumnType_INT,
 				Description: "The ID of the page to redirect to upon expiry.",
+				Transform:   transform.FromField("PageExpiryRedirectId"),
 			},
 			{
 				Name:        "page_expiry_redirect_url",

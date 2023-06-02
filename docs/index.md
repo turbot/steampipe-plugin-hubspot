@@ -60,7 +60,7 @@ steampipe plugin install hubspot
 | Credentials | HubSpot requires a [Private App Token](https://developers.hubspot.com/docs/api/private-apps) for all requests.                                                                          |
 | Permissions | The permission scope of Private App Tokens is set by the Admin at the creation time of the tokens.                                                                                      |
 | Radius      | Each connection represents a single HubSpot Installation.                                                                                                                               |
-| Resolution  | 1. Credentials explicitly set in a steampipe config file (`~/.steampipe/config/hubspot.spc`)<br />2. Credentials specified in environment variables, e.g., `HUBSPOT_PRIVATE_APP_TOKEN`. |
+| Resolution  | 1. Credentials explicitly set in a Steampipe config file (`~/.steampipe/config/hubspot.spc`)<br />2. Credentials specified in environment variables, e.g., `HUBSPOT_PRIVATE_APP_TOKEN`. |
 
 ### Configuration
 
@@ -85,7 +85,7 @@ You may specify the Private App Token to authenticate:
 
 ```hcl
 connection "hubspot" {
-  plugin    = "hubspot"
+  plugin = "hubspot"
 
   # Authentication information
   private_app_token = "pat-na1-70271006-11d8-4a5d-9169-b12f4327e5b"

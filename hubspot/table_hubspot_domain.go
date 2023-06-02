@@ -15,13 +15,7 @@ func tableHubSpotDomain(ctx context.Context) *plugin.Table {
 		Name:        "hubspot_domain",
 		Description: "List of HubSpot Domains.",
 		List: &plugin.ListConfig{
-			Hydrate:    listDomains,
-			KeyColumns: []*plugin.KeyColumn{
-				// {
-				// 	Name:    "archived",
-				// 	Require: plugin.Optional,
-				// },
-			},
+			Hydrate: listDomains,
 		},
 		Get: &plugin.GetConfig{
 			Hydrate:    getDomain,
@@ -32,6 +26,7 @@ func tableHubSpotDomain(ctx context.Context) *plugin.Table {
 				Name:        "portal_id",
 				Type:        proto.ColumnType_INT,
 				Description: "The portal ID.",
+				Transform:   transform.FromField("PortalId"),
 			},
 			{
 				Name:        "id",
@@ -143,11 +138,13 @@ func tableHubSpotDomain(ctx context.Context) *plugin.Table {
 				Name:        "certificate_id",
 				Type:        proto.ColumnType_INT,
 				Description: "The certificate ID.",
+				Transform:   transform.FromField("CertificateId"),
 			},
 			{
 				Name:        "ssl_request_id",
 				Type:        proto.ColumnType_INT,
 				Description: "The SSL request ID.",
+				Transform:   transform.FromField("SslRequestId"),
 			},
 			{
 				Name:        "is_used_for_blog_post",
@@ -178,6 +175,7 @@ func tableHubSpotDomain(ctx context.Context) *plugin.Table {
 				Name:        "setup_task_id",
 				Type:        proto.ColumnType_INT,
 				Description: "The setup task ID.",
+				Transform:   transform.FromField("SetupTaskId"),
 			},
 			{
 				Name:        "is_setup_complete",
@@ -233,11 +231,13 @@ func tableHubSpotDomain(ctx context.Context) *plugin.Table {
 				Name:        "site_id",
 				Type:        proto.ColumnType_INT,
 				Description: "The site ID.",
+				Transform:   transform.FromField("SiteId"),
 			},
 			{
 				Name:        "brand_id",
 				Type:        proto.ColumnType_INT,
 				Description: "The brand ID.",
+				Transform:   transform.FromField("BrandId"),
 			},
 			{
 				Name:        "deletable",
@@ -263,11 +263,13 @@ func tableHubSpotDomain(ctx context.Context) *plugin.Table {
 				Name:        "created_by_id",
 				Type:        proto.ColumnType_INT,
 				Description: "The ID of the user who created the domain.",
+				Transform:   transform.FromField("CreatedById"),
 			},
 			{
 				Name:        "updated_by_id",
 				Type:        proto.ColumnType_INT,
 				Description: "The ID of the user who last updated the domain.",
+				Transform:   transform.FromField("UpdatedById"),
 			},
 			{
 				Name:        "label",
