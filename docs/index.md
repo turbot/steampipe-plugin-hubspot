@@ -2,7 +2,7 @@
 organization: Turbot
 category: ["software development"]
 icon_url: "/images/plugins/turbot/hubspot.svg"
-brand_color: ""
+brand_color: "FF5C35"
 display_name: "HubSpot"
 short_name: "hubspot"
 description: "Steampipe plugin to query contacts, deals, tickets and more from HubSpot."
