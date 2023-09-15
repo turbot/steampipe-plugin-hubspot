@@ -10,6 +10,8 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
+//// TABLE DEFINITION
+
 func tableHubSpotBlogPost(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "hubspot_blog_post",
@@ -33,6 +35,7 @@ func tableHubSpotBlogPost(ctx context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Description: "The unique ID of the Blog Post.",
 				Transform:   transform.FromField("Id"),
+				//Transform function has been used in many places across the tables to fetch the values returned by the API. Without the transform function we are getting empty row.
 			},
 			{
 				Name:        "slug",
@@ -357,6 +360,8 @@ func tableHubSpotBlogPost(ctx context.Context) *plugin.Table {
 	}
 }
 
+//// LIST FUNCTION
+
 func listBlogPosts(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	authorizer, err := connect(ctx, d)
 	if err != nil {
@@ -423,6 +428,8 @@ func listBlogPosts(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 
 	return nil, nil
 }
+
+//// HYDRATE FUNCTIONS
 
 func getBlogPost(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	id := d.EqualsQualString("id")

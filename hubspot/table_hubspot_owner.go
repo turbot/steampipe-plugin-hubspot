@@ -11,6 +11,8 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
+//// TABLE DEFINITION
+
 func tableHubSpotOwner(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "hubspot_owner",
@@ -88,6 +90,8 @@ func tableHubSpotOwner(ctx context.Context) *plugin.Table {
 	}
 }
 
+//// LIST FUNCTION
+
 func listOwners(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	authorizer, err := connect(ctx, d)
 	if err != nil {
@@ -154,6 +158,8 @@ func listOwners(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData)
 
 	return nil, nil
 }
+
+//// HYDRATE FUNCTIONS
 
 func getOwner(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	id := d.EqualsQualString("id")

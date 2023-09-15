@@ -11,6 +11,8 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
+//// TABLE DEFINITION
+
 func tableHubSpotCompany(ctx context.Context, companyPropertiesColumns []properties.Property) *plugin.Table {
 	return &plugin.Table{
 		Name:        "hubspot_company",
@@ -66,6 +68,8 @@ func tableHubSpotCompany(ctx context.Context, companyPropertiesColumns []propert
 		}),
 	}
 }
+
+//// LIST FUNCTION
 
 func listCompanies(ctx context.Context, companyPropertiesColumns []properties.Property) func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	return func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
@@ -141,6 +145,8 @@ func listCompanies(ctx context.Context, companyPropertiesColumns []properties.Pr
 		return nil, nil
 	}
 }
+
+//// HYDRATE FUNCTIONS
 
 func getCompany(ctx context.Context, companyPropertiesColumns []properties.Property) func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	return func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {

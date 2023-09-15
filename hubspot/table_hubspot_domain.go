@@ -10,6 +10,8 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
+//// TABLE DEFINITION
+
 func tableHubSpotDomain(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "hubspot_domain",
@@ -343,6 +345,8 @@ func tableHubSpotDomain(ctx context.Context) *plugin.Table {
 	}
 }
 
+//// LIST FUNCTION
+
 func listDomains(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	authorizer, err := connect(ctx, d)
 	if err != nil {
@@ -404,6 +408,8 @@ func listDomains(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData
 
 	return nil, nil
 }
+
+//// HYDRATE FUNCTIONS
 
 func getDomain(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	id := d.EqualsQualString("id")

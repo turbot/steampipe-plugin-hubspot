@@ -72,27 +72,14 @@ Configure your account details in `~/.steampipe/config/hubspot.spc`:
 connection "hubspot" {
   plugin = "hubspot"
 
-  # private_app_token (required) - The HubSpot Private APP Token.
-  # Get your Private APP token from HubSpot https://developers.hubspot.com/docs/api/private-apps
-  # Can also be set with the HUBSPOT_PRIVATE_APP_TOKEN environment variable.
+  # The HubSpot Private APP Token. Required.
+  # Get your Private APP token from HubSpot https://developers.hubspot.com/docs/api/private-apps.
+  # Can also be set with the `HUBSPOT_PRIVATE_APP_TOKEN` environment variable.
   # private_app_token = "pat-na1-70271006-11d8-4a5d-9169-b12f4327e5b"
 }
 ```
 
-You may specify the Private App Token to authenticate:
-
-- `private_app_token`: The HubSpot Private APP Token.
-
-```hcl
-connection "hubspot" {
-  plugin = "hubspot"
-
-  # Authentication information
-  private_app_token = "pat-na1-70271006-11d8-4a5d-9169-b12f4327e5b"
-}
-```
-
-Alternatively, you can also use the standard HubSpot environment variables to obtain credentials **only if the `private_app_token` is not specified** in the connection:
+Alternatively, you can also use the standard HubSpot environment variable to obtain credentials **only if the `private_app_token` is not specified** in the connection:
 
 ```sh
 export HUBSPOT_PRIVATE_APP_TOKEN=pat-na1-70271006-11d8-4a5d-9169-b12f4327e5b
@@ -101,4 +88,4 @@ export HUBSPOT_PRIVATE_APP_TOKEN=pat-na1-70271006-11d8-4a5d-9169-b12f4327e5b
 ## Get involved
 
 - Open source: https://github.com/turbot/steampipe-plugin-hubspot
-- Community: [Slack Channel](https://steampipe.io/community/join)
+- Community: [Join #steampipe on Slack →](https://turbot.com/community/join)

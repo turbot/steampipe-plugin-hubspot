@@ -4,7 +4,7 @@ In HubSpot, the Domain refers to the website domain associated with a company or
 
 The Domain property is commonly used to associate companies or contacts with their corresponding websites, allowing you to track and manage information related to online presence, website activity, and interactions. By capturing the domain information, you can gain insights into a company or contact's online footprint, website traffic, and engagement.
 
-In HubSpot's CRM (Customer Relationship Management) system, you can store and utilize the Domain property to segment and categorize companies or contacts based on their website domains. This enables targeted marketing, personalized communication, and better understanding of your audience's online behavior.
+In HubSpot's CRM (Customer Relationship Management) system, you can store and utilize the Domain property to segment and categorize companies or contacts based on their website domains. This enables targeted marketing, personalized communication, and a better understanding of your audience's online behavior.
 
 ## Examples
 

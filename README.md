@@ -6,7 +6,7 @@ Use SQL to query contacts, deals, tickets and more from HubSpot.
 
 - **[Get started →](https://hub.steampipe.io/plugins/turbot/hubspot)**
 - Documentation: [Table definitions & examples](https://hub.steampipe.io/plugins/turbot/hubspot/tables)
-- Community: [Slack Channel](https://steampipe.io/community/join)
+- Community: [Join #steampipe on Slack →](https://turbot.com/community/join)
 - Get involved: [Issues](https://github.com/turbot/steampipe-plugin-hubspot/issues)
 
 ## Quick start
@@ -22,10 +22,6 @@ steampipe plugin install hubspot
 Configure your [credentials](https://hub.steampipe.io/plugins/turbot/hubspot#credentials) and [config file](https://hub.steampipe.io/plugins/turbot/hubspot#configuration).
 
 Configure your account details in `~/.steampipe/config/hubspot.spc`:
-
-You may specify the Private App Token to authenticate:
-
-- `private_app_token`: The HubSpot Private APP Token.
 
 ```hcl
 connection "hubspot" {
