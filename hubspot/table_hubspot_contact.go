@@ -52,7 +52,7 @@ func tableHubSpotContact(ctx context.Context, contactPropertiesColumns []propert
 			},
 			{
 				Name:        "archived_at",
-				Type:        proto.ColumnType_STRING,
+				Type:        proto.ColumnType_TIMESTAMP,
 				Description: "The timestamp when the contact was archived.",
 			},
 

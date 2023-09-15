@@ -52,7 +52,7 @@ func tableHubSpotTicket(ctx context.Context, ticketPropertiesColumns []propertie
 			},
 			{
 				Name:        "archived_at",
-				Type:        proto.ColumnType_STRING,
+				Type:        proto.ColumnType_TIMESTAMP,
 				Description: "The timestamp when the ticket was archived.",
 			},
 

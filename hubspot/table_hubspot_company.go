@@ -52,7 +52,7 @@ func tableHubSpotCompany(ctx context.Context, companyPropertiesColumns []propert
 			},
 			{
 				Name:        "archived_at",
-				Type:        proto.ColumnType_STRING,
+				Type:        proto.ColumnType_TIMESTAMP,
 				Description: "The timestamp when the company was archived.",
 			},
 

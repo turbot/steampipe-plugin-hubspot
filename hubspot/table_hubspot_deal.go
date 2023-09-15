@@ -52,7 +52,7 @@ func tableHubSpotDeal(ctx context.Context, dealPropertiesColumns []properties.Pr
 			},
 			{
 				Name:        "archived_at",
-				Type:        proto.ColumnType_STRING,
+				Type:        proto.ColumnType_TIMESTAMP,
 				Description: "The timestamp when the deal was archived.",
 			},
 
