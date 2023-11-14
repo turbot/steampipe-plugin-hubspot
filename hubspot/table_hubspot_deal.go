@@ -191,7 +191,6 @@ func setDealDynamicColumns(properties []properties.Property) []*plugin.Column {
 		column := &plugin.Column{
 			Name:        property.Name,
 			Description: property.Description,
-			//	Type:        proto.ColumnType_STRING,
 			Transform: transform.FromP(extractDealProperties, property.Name),
 		}
 		setDynamicColumnTypes(property, column)

@@ -78,7 +78,7 @@ where
   is_used_for_email;
 ```
 
-### List domains that are primary blog domain
+### List primary blog domains
 
 ```sql
 select

@@ -36,7 +36,7 @@ where
   pipeline <> 'default';
 ```
 
-### List unclosed deals
+### List closed deals
 
 ```sql
 select
