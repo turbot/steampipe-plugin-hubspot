@@ -50,7 +50,7 @@ where
   created_at > now() - interval '30 days';
 ```
 
-### List contacts who are from Queensland
+### List contacts from Queensland
 
 ```sql
 select
@@ -82,7 +82,7 @@ where
   lifecyclestage = 'lead';
 ```
 
-### List contacts who have never closed any deal
+### List contacts that have never closed any deal
 
 ```sql
 select

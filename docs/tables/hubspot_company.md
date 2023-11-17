@@ -77,7 +77,7 @@ where
   type = 'VENDOR';
 ```
 
-### List companies with a number of employees less than 200
+### List companies with less than 200 employees
 
 ```sql
 select

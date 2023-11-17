@@ -33,7 +33,7 @@ func connectAppTokenUncached(ctx context.Context, d *plugin.QueryData, _ *plugin
 	}
 
 	if appToken == "" {
-		return nil, errors.New("'private_app_token' must be set in the connection configuration. Edit your connection configuration file and then restart Steampipe.")
+		return nil, errors.New("'private_app_token' must be configured")
 	}
 
 	authorizer := hubspot.NewTokenAuthorizer(appToken)

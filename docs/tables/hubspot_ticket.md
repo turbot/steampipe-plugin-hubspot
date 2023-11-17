@@ -87,7 +87,7 @@ where
   source_type = 'PHONE';
 ```
 
-### List unclosed tickets
+### List open tickets
 
 ```sql
 select

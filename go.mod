@@ -1,6 +1,6 @@
 module github.com/turbot/steampipe-plugin-hubspot
 
-go 1.19
+go 1.21
 
 replace github.com/clarkmcc/go-hubspot => github.com/bigdatasourav/go-hubspot v1.2.0
 
