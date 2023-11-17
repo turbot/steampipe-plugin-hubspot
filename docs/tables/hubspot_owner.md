@@ -20,7 +20,7 @@ from
   hubspot_owner;
 ```
 
-### List all archived users
+### List all archived owners
 
 ```sql
 select
@@ -38,7 +38,7 @@ where
   archived;
 ```
 
-### List users created in the last 30 days
+### List owners created in the last 30 days
 
 ```sql
 select
@@ -56,7 +56,7 @@ where
   created_at > now() - interval '30 days';
 ```
 
-### List users who are not associated with any team
+### List owners who are not associated with any team
 
 ```sql
 select

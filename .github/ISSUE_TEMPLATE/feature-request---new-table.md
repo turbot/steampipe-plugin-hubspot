@@ -1,9 +1,10 @@
 ---
 name: Feature request - New table
 about: Suggest a new table for this project
-title: Add table hubspot_<resource>
+title: Add table hubspot_<service>_<resource>
 labels: enhancement, new table
-assignees: ""
+assignees: ''
+
 ---
 
 **References**

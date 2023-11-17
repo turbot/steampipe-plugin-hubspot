@@ -1,6 +1,6 @@
 ---
 organization: Turbot
-category: ["software development"]
+category: ["asset management"]
 icon_url: "/images/plugins/turbot/hubspot.svg"
 brand_color: "FF5C35"
 display_name: "HubSpot"
@@ -79,7 +79,7 @@ connection "hubspot" {
 }
 ```
 
-Alternatively, you can also use the standard HubSpot environment variable to obtain credentials **only if the `private_app_token` is not specified** in the connection:
+Alternatively, you can also use the standard HubSpot environment variable to obtain credentials **only if `private_app_token` is not specified** in the connection:
 
 ```sh
 export HUBSPOT_PRIVATE_APP_TOKEN=pat-na1-70271006-11d8-4a5d-9169-b12f4327e5b

@@ -88,25 +88,7 @@ where
   author_name = 'John Doe';
 ```
 
-### Get blog posts associated with a specific A/B test
-
-```sql
-select
-  id,
-  title,
-  slug,
-  campaign,
-  state,
-  archived,
-  author_name,
-  publish_date
-from
-  hubspot_blog_post
-where
-  ab_test_id = 'AB123';
-```
-
-### Get blog posts created by a specific user
+### Get blog posts created by a specific owner
 
 ```sql
 select

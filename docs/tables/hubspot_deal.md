@@ -19,7 +19,7 @@ from
   hubspot_deal;
 ```
 
-### List deals which are not in the default pipeline
+### List deals that are not in the default pipeline
 
 ```sql
 select
@@ -87,7 +87,7 @@ where
   created_at > now() - interval '30 days';
 ```
 
-### List deals which are a new business
+### List new business deals
 
 ```sql
 select
