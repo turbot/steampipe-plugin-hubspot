@@ -3,7 +3,6 @@
 _What's new?_
 
 - New tables added
-
   - [hubspot_blog_post](https://hub.steampipe.io/plugins/turbot/hubspot/tables/hubspot_blog_post)
   - [hubspot_company](https://hub.steampipe.io/plugins/turbot/hubspot/tables/hubspot_company)
   - [hubspot_contact](https://hub.steampipe.io/plugins/turbot/hubspot/tables/hubspot_contact)
