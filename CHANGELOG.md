@@ -1,3 +1,9 @@
+## v0.0.2 [2023-11-17]
+
+_Bug fixes_
+
+- Fixed the plugin branch colour. 
+
 ## v0.0.1 [2023-11-17]
 
 _What's new?_
