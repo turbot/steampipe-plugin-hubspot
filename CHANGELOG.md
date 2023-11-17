@@ -2,7 +2,7 @@
 
 _Bug fixes_
 
-- Fixed the plugin branch colour. 
+- Fixed the plugin brand colour. 
 
 ## v0.0.1 [2023-11-17]
 
