@@ -1,10 +1,20 @@
-# Table: hubspot_contact
+---
+title: "Steampipe Table: hubspot_contact - Query HubSpot Contacts using SQL"
+description: "Allows users to query HubSpot Contacts, providing insights into contact details and interactions."
+---
 
-In HubSpot, a Contact refers to an individual person or a potential customer with whom you have a relationship or interact within the context of your business. The Contact object is a fundamental component of HubSpot's CRM (Customer Relationship Management) system and serves as a central repository for storing and managing information related to your contacts, their interactions, activities, and more.
+# Table: hubspot_contact - Query HubSpot Contacts using SQL
+
+HubSpot Contacts is a resource within the HubSpot CRM that provides a comprehensive view of all interactions with a particular contact. It includes information such as contact details, communication history, and any associated deals or tasks. This resource helps businesses to maintain a centralized, up-to-date record of all contact interactions, enabling personalized and targeted communication strategies.
+
+## Table Usage Guide
+
+The `hubspot_contact` table provides insights into contact details and interactions within HubSpot CRM. As a Sales or Marketing professional, explore contact-specific details through this table, including communication history, associated deals, and tasks. Utilize it to uncover information about contacts, such as their engagement with your business, their preferences, and the effectiveness of your communication strategies.
 
 ## Examples
 
 ### Basic info
+Explore which contacts have been archived in your Hubspot database. This can help you identify instances where contact details may need to be updated or restored, providing a practical tool for maintaining your contact list.
 
 ```sql
 select
@@ -19,6 +29,7 @@ from
 ```
 
 ### List all archived contacts
+Explore which contacts have been archived in your Hubspot account. This can be useful for cleaning up your contact list or identifying potential leads that have been overlooked.
 
 ```sql
 select
@@ -35,6 +46,7 @@ where
 ```
 
 ### List contacts created in the last 30 days
+Determine the contacts that have been added within the past month. This allows you to keep track of recent additions to your network and ensure you are staying up-to-date with new connections.
 
 ```sql
 select
@@ -51,6 +63,7 @@ where
 ```
 
 ### List contacts from Queensland
+Explore which contacts are based in Queensland to target marketing campaigns more effectively. This helps in personalizing communication and improving customer engagement.
 
 ```sql
 select
@@ -67,6 +80,7 @@ where
 ```
 
 ### List lead contacts
+Discover the segments that consist of lead contacts in your Hubspot account. This query is useful in identifying prospective customers for targeted marketing or sales follow-ups.
 
 ```sql
 select
@@ -83,6 +97,7 @@ where
 ```
 
 ### List contacts that have never closed any deal
+Determine the areas in which contacts have not yet successfully closed any deals. This can be useful for identifying potential opportunities for engagement or training needs.
 
 ```sql
 select
@@ -99,6 +114,7 @@ where
 ```
 
 ### List contacts who are Salespersons
+Explore which contacts in your database are designated as Salespersons. This can be beneficial in identifying potential leads or understanding your interaction with this specific job role.
 
 ```sql
 select
