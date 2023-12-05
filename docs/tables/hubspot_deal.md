@@ -105,7 +105,7 @@ select
 from
   hubspot_deal
 where
-  closedate <= date('now');
+  strftime('%Y-%m-%d', closedate) <= date('now');
 ```
 
 ### List all archived deals
