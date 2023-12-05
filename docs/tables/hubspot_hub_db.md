@@ -18,7 +18,21 @@ The `hubspot_hub_db` table provides insights into HubSpot Hubs within the HubSpo
 ### Basic info
 Explore the basic information about your Hubspot database, such as the number of columns and rows, publishing status, and creation details. This can be useful to understand the overall structure and content of your database at a glance.
 
-```sql
+```sql+postgres
+select
+  id,
+  title,
+  label,
+  published,
+  column_count,
+  row_count,
+  created_by,
+  created_at
+from
+  hubspot_hub_db;
+```
+
+```sql+sqlite
 select
   id,
   title,
@@ -35,7 +49,7 @@ from
 ### List archived DBs
 Explore which databases have been archived. This can be useful for maintaining data integrity and ensuring that outdated or unnecessary information is properly stored away.
 
-```sql
+```sql+postgres
 select
   id,
   title,
@@ -51,10 +65,26 @@ where
   archived;
 ```
 
+```sql+sqlite
+select
+  id,
+  title,
+  label,
+  published,
+  column_count,
+  row_count,
+  created_by,
+  created_at
+from
+  hubspot_hub_db
+where
+  archived = 1;
+```
+
 ### List public DBs
 Explore which databases are set to public access to understand potential security risks and ensure appropriate data privacy measures are in place. This can be particularly useful for auditing and compliance purposes.
 
-```sql
+```sql+postgres
 select
   id,
   title,
@@ -70,10 +100,26 @@ where
   allow_public_api_access;
 ```
 
+```sql+sqlite
+select
+  id,
+  title,
+  label,
+  published,
+  column_count,
+  row_count,
+  created_by,
+  created_at
+from
+  hubspot_hub_db
+where
+  allow_public_api_access = 1;
+```
+
 ### List published DBs
 Explore which databases have been published in your Hubspot Hub. This can help you understand the scope and scale of your data, as well as track the creation and publication of new databases.
 
-```sql
+```sql+postgres
 select
   id,
   title,
@@ -89,10 +135,26 @@ where
   published;
 ```
 
+```sql+sqlite
+select
+  id,
+  title,
+  label,
+  published,
+  column_count,
+  row_count,
+  created_by,
+  created_at
+from
+  hubspot_hub_db
+where
+  published = 1;
+```
+
 ### List DBs where child tables are not allowed
 Discover the segments where child tables are disallowed in databases. This can be useful to understand the structure and restrictions of your database system.
 
-```sql
+```sql+postgres
 select
   id,
   title,
@@ -108,10 +170,26 @@ where
   not allow_child_tables;
 ```
 
+```sql+sqlite
+select
+  id,
+  title,
+  label,
+  published,
+  column_count,
+  row_count,
+  created_by,
+  created_at
+from
+  hubspot_hub_db
+where
+  allow_child_tables = 0;
+```
+
 ### List DBs created in the last 30 days
 Discover the databases that were established within the past month. This query is beneficial for maintaining a fresh perspective on recent data additions and understanding the growth rate of your database accumulation.
 
-```sql
+```sql+postgres
 select
   id,
   title,
@@ -125,4 +203,20 @@ from
   hubspot_hub_db
 where
   created_at > now() - interval '30 days';
+```
+
+```sql+sqlite
+select
+  id,
+  title,
+  label,
+  published,
+  column_count,
+  row_count,
+  created_by,
+  created_at
+from
+  hubspot_hub_db
+where
+  created_at > datetime('now', '-30 days');
 ```

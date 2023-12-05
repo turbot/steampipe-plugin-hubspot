@@ -16,7 +16,21 @@ The `hubspot_owner` table provides insights into the owners within a HubSpot acc
 ### Basic info
 Explore the essential details of the HubSpot owners, such as their identification, title, and creation date. This is beneficial to understand the owners' archival status and personal information, which can be useful for auditing and account management purposes.
 
-```sql
+```sql+postgres
+select
+  id,
+  title,
+  created_at,
+  archived,
+  email,
+  first_name,
+  last_name,
+  user_id
+from
+  hubspot_owner;
+```
+
+```sql+sqlite
 select
   id,
   title,
@@ -33,7 +47,7 @@ from
 ### List all archived owners
 Discover the segments that include all archived owners. This is useful for understanding which owners are no longer active, helping to maintain an up-to-date and accurate database.
 
-```sql
+```sql+postgres
 select
   id,
   title,
@@ -49,10 +63,26 @@ where
   archived;
 ```
 
+```sql+sqlite
+select
+  id,
+  title,
+  created_at,
+  archived,
+  email,
+  first_name,
+  last_name,
+  user_id
+from
+  hubspot_owner
+where
+  archived = 1;
+```
+
 ### List owners created in the last 30 days
 Discover recent additions to your team by identifying new owners added within the past month. This is useful for keeping track of team growth and ensuring all new members are properly onboarded.
 
-```sql
+```sql+postgres
 select
   id,
   title,
@@ -68,10 +98,42 @@ where
   created_at > now() - interval '30 days';
 ```
 
+```sql+sqlite
+select
+  id,
+  title,
+  created_at,
+  archived,
+  email,
+  first_name,
+  last_name,
+  user_id
+from
+  hubspot_owner
+where
+  created_at > datetime('now','-30 days');
+```
+
 ### List owners who are not associated with any team
 Uncover the details of owners who are not part of any team. This can be useful for identifying potential resource allocation or communication gaps within your organization.
 
-```sql
+```sql+postgres
+select
+  id,
+  title,
+  created_at,
+  archived,
+  email,
+  first_name,
+  last_name,
+  user_id
+from
+  hubspot_owner
+where
+  teams is null;
+```
+
+```sql+sqlite
 select
   id,
   title,

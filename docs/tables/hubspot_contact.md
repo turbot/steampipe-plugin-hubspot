@@ -16,7 +16,19 @@ The `hubspot_contact` table provides insights into contact details and interacti
 ### Basic info
 Explore which contacts have been archived in your Hubspot database. This can help you identify instances where contact details may need to be updated or restored, providing a practical tool for maintaining your contact list.
 
-```sql
+```sql+postgres
+select
+  id,
+  created_at,
+  archived,
+  email,
+  firstname,
+  lastname
+from
+  hubspot_contact;
+```
+
+```sql+sqlite
 select
   id,
   created_at,
@@ -31,7 +43,7 @@ from
 ### List all archived contacts
 Explore which contacts have been archived in your Hubspot account. This can be useful for cleaning up your contact list or identifying potential leads that have been overlooked.
 
-```sql
+```sql+postgres
 select
   id,
   created_at,
@@ -45,10 +57,24 @@ where
   archived;
 ```
 
+```sql+sqlite
+select
+  id,
+  created_at,
+  archived,
+  email,
+  firstname,
+  lastname
+from
+  hubspot_contact
+where
+  archived = 1;
+```
+
 ### List contacts created in the last 30 days
 Determine the contacts that have been added within the past month. This allows you to keep track of recent additions to your network and ensure you are staying up-to-date with new connections.
 
-```sql
+```sql+postgres
 select
   id,
   created_at,
@@ -62,10 +88,38 @@ where
   created_at > now() - interval '30 days';
 ```
 
+```sql+sqlite
+select
+  id,
+  created_at,
+  archived,
+  email,
+  firstname,
+  lastname
+from
+  hubspot_contact
+where
+  created_at > datetime('now', '-30 days');
+```
+
 ### List contacts from Queensland
 Explore which contacts are based in Queensland to target marketing campaigns more effectively. This helps in personalizing communication and improving customer engagement.
 
-```sql
+```sql+postgres
+select
+  id,
+  created_at,
+  archived,
+  email,
+  firstname,
+  lastname
+from
+  hubspot_contact
+where
+  state = 'QLD';
+```
+
+```sql+sqlite
 select
   id,
   created_at,
@@ -82,7 +136,21 @@ where
 ### List lead contacts
 Discover the segments that consist of lead contacts in your Hubspot account. This query is useful in identifying prospective customers for targeted marketing or sales follow-ups.
 
-```sql
+```sql+postgres
+select
+  id,
+  created_at,
+  archived,
+  email,
+  firstname,
+  lastname
+from
+  hubspot_contact
+where
+  lifecyclestage = 'lead';
+```
+
+```sql+sqlite
 select
   id,
   created_at,
@@ -99,7 +167,21 @@ where
 ### List contacts that have never closed any deal
 Determine the areas in which contacts have not yet successfully closed any deals. This can be useful for identifying potential opportunities for engagement or training needs.
 
-```sql
+```sql+postgres
+select
+  id,
+  created_at,
+  archived,
+  email,
+  firstname,
+  lastname
+from
+  hubspot_contact
+where
+  recent_deal_close_date is null;
+```
+
+```sql+sqlite
 select
   id,
   created_at,
@@ -116,7 +198,21 @@ where
 ### List contacts who are Salespersons
 Explore which contacts in your database are designated as Salespersons. This can be beneficial in identifying potential leads or understanding your interaction with this specific job role.
 
-```sql
+```sql+postgres
+select
+  id,
+  created_at,
+  archived,
+  email,
+  firstname,
+  lastname
+from
+  hubspot_contact
+where
+  jobtitle = 'Salesperson';
+```
+
+```sql+sqlite
 select
   id,
   created_at,

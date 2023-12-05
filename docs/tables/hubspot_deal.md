@@ -16,7 +16,20 @@ The `hubspot_deal` table provides insights into business transactions managed th
 ### Basic info
 Gain insights into the creation, archiving status, and financial details of various business deals. This can assist in tracking deal progress and managing sales pipelines effectively.
 
-```sql
+```sql+postgres
+select
+  id,
+  created_at,
+  archived,
+  amount,
+  dealname,
+  pipeline,
+  dealstage
+from
+  hubspot_deal;
+```
+
+```sql+sqlite
 select
   id,
   created_at,
@@ -32,7 +45,22 @@ from
 ### List deals that are not in the default pipeline
 Discover the segments that are not part of the default pipeline in order to identify potential outliers or unique deals. This can be useful for revenue forecasting or sales strategy planning.
 
-```sql
+```sql+postgres
+select
+  id,
+  created_at,
+  archived,
+  amount,
+  dealname,
+  pipeline,
+  dealstage
+from
+  hubspot_deal
+where
+  pipeline <> 'default';
+```
+
+```sql+sqlite
 select
   id,
   created_at,
@@ -50,7 +78,7 @@ where
 ### List closed deals
 Discover the segments that have completed deals, allowing you to analyze past transactions and understand your sales performance. This is useful for assessing the effectiveness of your sales pipeline and identifying areas for improvement.
 
-```sql
+```sql+postgres
 select
   id,
   created_at,
@@ -65,10 +93,25 @@ where
   closedate <= now();
 ```
 
+```sql+sqlite
+select
+  id,
+  created_at,
+  archived,
+  amount,
+  dealname,
+  pipeline,
+  dealstage
+from
+  hubspot_deal
+where
+  closedate <= date('now');
+```
+
 ### List all archived deals
 Uncover the details of all archived deals within your system to track their creation date, amount, name, pipeline, and stage. This allows for effective management and review of past business transactions.
 
-```sql
+```sql+postgres
 select
   id,
   created_at,
@@ -83,10 +126,25 @@ where
   archived;
 ```
 
+```sql+sqlite
+select
+  id,
+  created_at,
+  archived,
+  amount,
+  dealname,
+  pipeline,
+  dealstage
+from
+  hubspot_deal
+where
+  archived = 1;
+```
+
 ### List deals created in the last 30 days
 Explore which deals were initiated in the past month. This can help businesses assess recent activity and understand the current state of their sales pipeline.
 
-```sql
+```sql+postgres
 select
   id,
   created_at,
@@ -101,10 +159,40 @@ where
   created_at > now() - interval '30 days';
 ```
 
+```sql+sqlite
+select
+  id,
+  created_at,
+  archived,
+  amount,
+  dealname,
+  pipeline,
+  dealstage
+from
+  hubspot_deal
+where
+  created_at > datetime('now', '-30 days');
+```
+
 ### List new business deals
 Explore which new business deals have been initiated by analyzing factors such as deal amount, stage, and whether it's archived. This can help in understanding the growth and progress of your business.
 
-```sql
+```sql+postgres
+select
+  id,
+  created_at,
+  archived,
+  amount,
+  dealname,
+  pipeline,
+  dealstage
+from
+  hubspot_deal
+where
+  dealtype = 'newbusiness';
+```
+
+```sql+sqlite
 select
   id,
   created_at,
@@ -122,7 +210,22 @@ where
 ### List deals where the amount is more than $10000
 Explore which deals have an amount exceeding $10,000 to gain insights into high-value transactions and assess their associated details such as deal name, pipeline, and deal stage. This could be beneficial in identifying lucrative opportunities and understanding the distribution of high-value deals across different stages.
 
-```sql
+```sql+postgres
+select
+  id,
+  created_at,
+  archived,
+  amount,
+  dealname,
+  pipeline,
+  dealstage
+from
+  hubspot_deal
+where
+  amount > 10000;
+```
+
+```sql+sqlite
 select
   id,
   created_at,
@@ -140,7 +243,22 @@ where
 ### List deals which are in an appointment-scheduled stage
 Explore which deals are in the appointment-scheduled stage, allowing you to assess the elements within your sales pipeline that are moving towards a potential close. This can help you manage your resources and prioritize your sales efforts effectively.
 
-```sql
+```sql+postgres
+select
+  id,
+  created_at,
+  archived,
+  amount,
+  dealname,
+  pipeline,
+  dealstage
+from
+  hubspot_deal
+where
+  dealstage = 'appointmentscheduled';
+```
+
+```sql+sqlite
 select
   id,
   created_at,
