@@ -8,6 +8,7 @@ short_name: "hubspot"
 description: "Steampipe plugin to query contacts, deals, tickets and more from HubSpot."
 og_description: "Query HubSpot with SQL! Open source CLI. No DB required."
 og_image: "/images/plugins/turbot/hubspot-social-graphic.png"
+engines: ["steampipe", "sqlite", "postgres", "export"]
 ---
 
 # HubSpot + Steampipe
