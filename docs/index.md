@@ -8,13 +8,16 @@ short_name: "hubspot"
 description: "Steampipe plugin to query contacts, deals, tickets and more from HubSpot."
 og_description: "Query HubSpot with SQL! Open source CLI. No DB required."
 og_image: "/images/plugins/turbot/hubspot-social-graphic.png"
+engines: ["steampipe", "sqlite", "postgres", "export"]
 ---
 
 # HubSpot + Steampipe
 
+[Steampipe](https://steampipe.io) is an open-source zero-ETL engine to instantly query cloud APIs using SQL.
+
 [HubSpot](https://www.hubspot.com/) is a CRM platform with all the software, integrations, and resources you need to connect marketing, sales, content management, and customer service. Each product in the platform is powerful on its own, but the real magic happens when you use them together.
 
-[Steampipe](https://steampipe.io) is an open source CLI to instantly query cloud APIs using SQL.
+
 
 List your HubSpot deals:
 
@@ -85,7 +88,4 @@ Alternatively, you can also use the standard HubSpot environment variable to obt
 export HUBSPOT_PRIVATE_APP_TOKEN=pat-na1-70271006-11d8-4a5d-9169-b12f4327e5b
 ```
 
-## Get involved
 
-- Open source: https://github.com/turbot/steampipe-plugin-hubspot
-- Community: [Join #steampipe on Slack →](https://turbot.com/community/join)

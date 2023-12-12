@@ -1,16 +1,36 @@
-# Table: hubspot_domain
+---
+title: "Steampipe Table: hubspot_domain - Query HubSpot Domains using SQL"
+description: "Allows users to query Domains in HubSpot, providing specific details about each domain including its ID, name, created and updated timestamps, and more."
+---
 
-In HubSpot, the Domain refers to the website domain associated with a company or contact. It represents the web address or URL of the company's website or the individual contact's website, if applicable.
+# Table: hubspot_domain - Query HubSpot Domains using SQL
 
-The Domain property is commonly used to associate companies or contacts with their corresponding websites, allowing you to track and manage information related to online presence, website activity, and interactions. By capturing the domain information, you can gain insights into a company or contact's online footprint, website traffic, and engagement.
+HubSpot Domains are resources within the HubSpot platform that represent the domains associated with a particular HubSpot portal. These domains are used to host the content created within HubSpot, including landing pages, blog posts, and other forms of web content. Each domain is unique to a particular portal and contains specific details such as its ID, name, and the timestamps for when it was created and last updated.
 
-In HubSpot's CRM (Customer Relationship Management) system, you can store and utilize the Domain property to segment and categorize companies or contacts based on their website domains. This enables targeted marketing, personalized communication, and a better understanding of your audience's online behavior.
+## Table Usage Guide
+
+The `hubspot_domain` table provides insights into the domains within HubSpot. As a web content manager or digital marketer, you can explore domain-specific details through this table, including the domain's ID, name, created and updated timestamps, and more. Use this table to maintain an inventory of your domains, track their creation and update times, and manage your web content more effectively.
 
 ## Examples
 
 ### Basic info
+Explore the basic information of your Hubspot domains to understand their creation details and DNS configurations. This can help assess the correctness of the DNS and identify any potential issues with the domain settings.
 
-```sql
+```sql+postgres
+select
+  id,
+  title,
+  created,
+  primary_email,
+  full_category_key,
+  is_dns_correct,
+  actual_cname,
+  actual_ip
+from
+  hubspot_domain;
+```
+
+```sql+sqlite
 select
   id,
   title,
@@ -25,8 +45,25 @@ from
 ```
 
 ### List legacy domains
+Discover the segments that still use legacy domains, enabling you to assess the elements within your system that may require updates or changes. This is particularly useful in maintaining system efficiency and staying up-to-date with newer domain standards.
 
-```sql
+```sql+postgres
+select
+  id,
+  title,
+  created,
+  primary_email,
+  full_category_key,
+  is_dns_correct,
+  actual_cname,
+  actual_ip
+from
+  hubspot_domain
+where
+  is_legacy;
+```
+
+```sql+sqlite
 select
   id,
   title,
@@ -43,8 +80,9 @@ where
 ```
 
 ### List domains where SSL is enabled
+Explore domains that have SSL security enabled to ensure secure data transmission and improve website credibility. This is particularly beneficial for evaluating security measures and identifying potential improvements.
 
-```sql
+```sql+postgres
 select
   id,
   title,
@@ -60,9 +98,26 @@ where
   is_ssl_enabled;
 ```
 
-### List domains which are used for email
+```sql+sqlite
+select
+  id,
+  title,
+  created,
+  primary_email,
+  full_category_key,
+  is_dns_correct,
+  actual_cname,
+  actual_ip
+from
+  hubspot_domain
+where
+  is_ssl_enabled = 1;
+```
 
-```sql
+### List domains which are used for email
+Uncover the details of domains that are configured for email usage. This is helpful for conducting audits or troubleshooting email delivery issues.
+
+```sql+postgres
 select
   id,
   title,
@@ -78,9 +133,42 @@ where
   is_used_for_email;
 ```
 
-### List primary blog domains
+```sql+sqlite
+select
+  id,
+  title,
+  created,
+  primary_email,
+  full_category_key,
+  is_dns_correct,
+  actual_cname,
+  actual_ip
+from
+  hubspot_domain
+where
+  is_used_for_email = 1;
+```
 
-```sql
+### List primary blog domains
+Gain insights into the primary blog domains, focusing on their creation date, title, and email associated with them. This is beneficial for understanding the configuration and status of your blog domains, especially their DNS correctness and actual CNAME and IP.
+
+```sql+postgres
+select
+  id,
+  title,
+  created,
+  primary_email,
+  full_category_key,
+  is_dns_correct,
+  actual_cname,
+  actual_ip
+from
+  hubspot_domain
+where
+  primary_blog;
+```
+
+```sql+sqlite
 select
   id,
   title,
@@ -97,8 +185,25 @@ where
 ```
 
 ### List domains that are not associated with any team
+Discover the segments that consist of domains not linked to any team. This could be useful in identifying potential areas for team assignment or highlighting domains that may be under-utilized or overlooked.
 
-```sql
+```sql+postgres
+select
+  id,
+  title,
+  created,
+  primary_email,
+  full_category_key,
+  is_dns_correct,
+  actual_cname,
+  actual_ip
+from
+  hubspot_domain
+where
+  team_ids is null;
+```
+
+```sql+sqlite
 select
   id,
   title,
@@ -115,8 +220,9 @@ where
 ```
 
 ### List deletable domains
+Explore which domains are marked as deletable in your Hubspot account. This can help maintain your domain list by identifying those that can be safely removed without disrupting your operations.
 
-```sql
+```sql+postgres
 select
   id,
   title,
@@ -132,9 +238,42 @@ where
   deletable;
 ```
 
-### List domains where setup is incomplete
+```sql+sqlite
+select
+  id,
+  title,
+  created,
+  primary_email,
+  full_category_key,
+  is_dns_correct,
+  actual_cname,
+  actual_ip
+from
+  hubspot_domain
+where
+  deletable = 1;
+```
 
-```sql
+### List domains where setup is incomplete
+Discover the segments that consist of domains with incomplete setup, enabling you to identify and address these areas to ensure all domains are fully operational. This is beneficial for maintaining a seamless and efficient digital infrastructure.
+
+```sql+postgres
+select
+  id,
+  title,
+  created,
+  primary_email,
+  full_category_key,
+  is_dns_correct,
+  actual_cname,
+  actual_ip
+from
+  hubspot_domain
+where
+  not is_setup_complete;
+```
+
+```sql+sqlite
 select
   id,
   title,
