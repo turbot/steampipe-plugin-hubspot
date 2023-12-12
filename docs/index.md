@@ -13,9 +13,11 @@ engines: ["steampipe", "sqlite", "postgres", "export"]
 
 # HubSpot + Steampipe
 
+[Steampipe](https://steampipe.io) is an open-source zero-ETL engine to instantly query cloud APIs using SQL.
+
 [HubSpot](https://www.hubspot.com/) is a CRM platform with all the software, integrations, and resources you need to connect marketing, sales, content management, and customer service. Each product in the platform is powerful on its own, but the real magic happens when you use them together.
 
-[Steampipe](https://steampipe.io) is an open source CLI to instantly query cloud APIs using SQL.
+
 
 List your HubSpot deals:
 
