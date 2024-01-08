@@ -45,14 +45,14 @@ func listAllPropertiesByObjectType(ctx context.Context, d *plugin.QueryData, obj
 	authorizer, err := connect(ctx, d)
 	if err != nil {
 		plugin.Logger(ctx).Error("listAllPropertiesByObjectType", "connection_error", err)
-		return nil, err
+		return []properties.Property{}, nil
 	}
 	context := hubspot.WithAuthorizer(context.Background(), authorizer)
 	client := properties.NewAPIClient(properties.NewConfiguration())
 	resp, _, err := client.CoreApi.GetAll(context, objectType).Execute()
 	if err != nil {
 		plugin.Logger(ctx).Error("listAllPropertiesByObjectType", "api_error", err)
-		return nil, err
+		return []properties.Property{}, nil
 	}
 
 	return resp.Results, nil
