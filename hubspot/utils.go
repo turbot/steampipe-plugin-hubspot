@@ -71,6 +71,6 @@ func setDynamicColumnTypes(property properties.Property, column *plugin.Column) 
 	case "enumeration":
 		column.Type = proto.ColumnType_STRING
 	default:
-		column.Type = proto.ColumnType_JSON
+		column.Type = proto.ColumnType_STRING
 	}
 }
