@@ -3,7 +3,7 @@
 _Bug fixes_
 
 - Fixed the plugin to return nil instead of an error when API credentials are not set in the `*.spc` file. ([#14](https://github.com/turbot/steampipe-plugin-hubspot/pull/14))
-- Updated the type of the `default` column in the `setDynamicColumnTypes` function from JSON to string. ([#16](https://github.com/turbot/steampipe-plugin-hubspot/pull/16))
+- Updated the type of the `default` column for the dynamic columns from `JSON` to `string`. ([#16](https://github.com/turbot/steampipe-plugin-hubspot/pull/16))
 
 ## v0.1.0 [2023-12-12]
 
