@@ -1,3 +1,10 @@
+## v0.1.1 [2024-02-26]
+
+_Bug fixes_
+
+- Fixed the plugin to return nil instead of an error when API credentials are not set in the `*.spc` file. ([#14](https://github.com/turbot/steampipe-plugin-hubspot/pull/14))
+- Updated the type of the `default` column in the `setDynamicColumnTypes` function from JSON to string. ([#16](https://github.com/turbot/steampipe-plugin-hubspot/pull/16))
+
 ## v0.1.0 [2023-12-12]
 
 _What's new?_
@@ -14,7 +21,7 @@ _Dependencies_
 
 _Bug fixes_
 
-- Fixed the plugin brand colour. 
+- Fixed the plugin brand colour.
 
 ## v0.0.1 [2023-11-17]
 
