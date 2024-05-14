@@ -30,7 +30,7 @@ func tableHubSpotTicket(ctx context.Context, ticketPropertiesColumns []propertie
 			Hydrate:    getTicket(ctx, ticketPropertiesColumns),
 			KeyColumns: plugin.SingleColumn("id"),
 		},
-		Columns: ticketColumns(ticketPropertiesColumns, []*plugin.Column{
+		Columns: commonColumns(ticketColumns(ticketPropertiesColumns, []*plugin.Column{
 			{
 				Name:        "id",
 				Type:        proto.ColumnType_STRING,
@@ -65,7 +65,7 @@ func tableHubSpotTicket(ctx context.Context, ticketPropertiesColumns []propertie
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("Id"),
 			},
-		}),
+		})),
 	}
 }
 

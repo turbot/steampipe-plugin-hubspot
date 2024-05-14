@@ -30,7 +30,7 @@ func tableHubSpotDeal(ctx context.Context, dealPropertiesColumns []properties.Pr
 			Hydrate:    getDeal(ctx, dealPropertiesColumns),
 			KeyColumns: plugin.SingleColumn("id"),
 		},
-		Columns: dealColumns(dealPropertiesColumns, []*plugin.Column{
+		Columns: commonColumns(dealColumns(dealPropertiesColumns, []*plugin.Column{
 			{
 				Name:        "id",
 				Type:        proto.ColumnType_STRING,
@@ -65,7 +65,7 @@ func tableHubSpotDeal(ctx context.Context, dealPropertiesColumns []properties.Pr
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("Id"),
 			},
-		}),
+		})),
 	}
 }
 

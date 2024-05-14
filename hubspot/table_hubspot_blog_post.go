@@ -29,7 +29,7 @@ func tableHubSpotBlogPost(ctx context.Context) *plugin.Table {
 			Hydrate:    getBlogPost,
 			KeyColumns: plugin.SingleColumn("id"),
 		},
-		Columns: []*plugin.Column{
+		Columns: commonColumns([]*plugin.Column{
 			{
 				Name:        "id",
 				Type:        proto.ColumnType_STRING,
@@ -356,7 +356,7 @@ func tableHubSpotBlogPost(ctx context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("Name"),
 			},
-		},
+		}),
 	}
 }
 

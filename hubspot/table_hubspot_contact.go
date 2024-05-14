@@ -30,7 +30,7 @@ func tableHubSpotContact(ctx context.Context, contactPropertiesColumns []propert
 			Hydrate:    getContact(ctx, contactPropertiesColumns),
 			KeyColumns: plugin.SingleColumn("id"),
 		},
-		Columns: contactColumns(contactPropertiesColumns, []*plugin.Column{
+		Columns: commonColumns(contactColumns(contactPropertiesColumns, []*plugin.Column{
 			{
 				Name:        "id",
 				Type:        proto.ColumnType_STRING,
@@ -65,7 +65,7 @@ func tableHubSpotContact(ctx context.Context, contactPropertiesColumns []propert
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("Id"),
 			},
-		}),
+		})),
 	}
 }
 

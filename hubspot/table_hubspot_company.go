@@ -30,7 +30,7 @@ func tableHubSpotCompany(ctx context.Context, companyPropertiesColumns []propert
 			Hydrate:    getCompany(ctx, companyPropertiesColumns),
 			KeyColumns: plugin.SingleColumn("id"),
 		},
-		Columns: companyColumns(companyPropertiesColumns, []*plugin.Column{
+		Columns: commonColumns(companyColumns(companyPropertiesColumns, []*plugin.Column{
 			{
 				Name:        "id",
 				Type:        proto.ColumnType_STRING,
@@ -65,7 +65,7 @@ func tableHubSpotCompany(ctx context.Context, companyPropertiesColumns []propert
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("Id"),
 			},
-		}),
+		})),
 	}
 }
 
