@@ -20,6 +20,12 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 		DefaultRetryConfig: &plugin.RetryConfig{
 			ShouldRetryErrorFunc: shouldRetryError([]string{"429"}),
 		},
+		ConnectionKeyColumns: []plugin.ConnectionKeyColumn{
+			{
+				Name:    "portal_id",
+				Hydrate: getPortalId,
+			},
+		},
 		SchemaMode:   plugin.SchemaModeStatic,
 		TableMapFunc: pluginTableDefinitions,
 	}

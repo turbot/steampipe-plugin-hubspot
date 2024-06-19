@@ -28,7 +28,8 @@ func tableHubSpotDomain(ctx context.Context) *plugin.Table {
 				Name:        "portal_id",
 				Type:        proto.ColumnType_INT,
 				Description: "The portal ID.",
-				Transform:   transform.FromField("PortalId"),
+				Hydrate:     getPortalId,
+				Transform:   transform.FromValue(),
 			},
 			{
 				Name:        "id",
