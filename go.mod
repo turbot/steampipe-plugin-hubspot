@@ -8,7 +8,7 @@ replace github.com/clarkmcc/go-hubspot => github.com/bigdatasourav/go-hubspot v1
 
 require (
 	github.com/clarkmcc/go-hubspot v0.0.0-20221010213350-20c2f9cbf936
-	github.com/turbot/steampipe-plugin-sdk/v5 v5.10.1
+	github.com/turbot/steampipe-plugin-sdk/v5 v5.10.2
 )
 
 require (
