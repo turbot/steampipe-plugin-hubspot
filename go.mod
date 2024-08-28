@@ -1,14 +1,14 @@
 module github.com/turbot/steampipe-plugin-hubspot
 
-go 1.21.0
+go 1.22.4
 
-toolchain go1.21.1
+toolchain go1.22.6
 
 replace github.com/clarkmcc/go-hubspot => github.com/bigdatasourav/go-hubspot v1.2.0
 
 require (
 	github.com/clarkmcc/go-hubspot v0.0.0-20221010213350-20c2f9cbf936
-	github.com/turbot/steampipe-plugin-sdk/v5 v5.10.1
+	github.com/turbot/steampipe-plugin-sdk/v5 v5.10.3
 )
 
 require (
