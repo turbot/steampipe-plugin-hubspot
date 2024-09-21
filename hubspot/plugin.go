@@ -35,7 +35,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 
 func pluginTableDefinitions(ctx context.Context, d *plugin.TableMapData) (map[string]*plugin.Table, error) {
 
-	// set Connection and ConectionCache
+	// set Connection and ConnectionCache
 	queryData := &plugin.QueryData{
 		Connection:      d.Connection,
 		ConnectionCache: d.ConnectionCache,
