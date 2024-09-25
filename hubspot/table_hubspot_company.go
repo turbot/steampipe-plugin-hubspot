@@ -18,7 +18,7 @@ func tableHubSpotCompany(ctx context.Context, companyPropertiesColumns []propert
 		Name:        "hubspot_company",
 		Description: "List of HubSpot Companies.",
 		List: &plugin.ListConfig{
-			Hydrate: listCompanies(ctx, companyPropertiesColumns),
+			Hydrate: listCompanies,
 			KeyColumns: []*plugin.KeyColumn{
 				{
 					Name:    "archived",
@@ -27,7 +27,7 @@ func tableHubSpotCompany(ctx context.Context, companyPropertiesColumns []propert
 			},
 		},
 		Get: &plugin.GetConfig{
-			Hydrate:    getCompany(ctx, companyPropertiesColumns),
+			Hydrate:    getCompany,
 			KeyColumns: plugin.SingleColumn("id"),
 		},
 		Columns: commonColumns(companyColumns(companyPropertiesColumns, []*plugin.Column{
@@ -71,114 +71,98 @@ func tableHubSpotCompany(ctx context.Context, companyPropertiesColumns []propert
 
 //// LIST FUNCTION
 
-func listCompanies(ctx context.Context, companyPropertiesColumns []properties.Property) func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	return func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-		authorizer, err := connect(ctx, d)
-		if err != nil {
-			plugin.Logger(ctx).Error("hubspot_company.listCompanies", "connection_error", err)
-			return nil, err
-		}
-		context := hubspot.WithAuthorizer(context.Background(), authorizer)
-		client := companies.NewAPIClient(companies.NewConfiguration())
-
-		// Limiting the results
-		var maxLimit int32 = 100
-		if d.QueryContext.Limit != nil {
-			limit := int32(*d.QueryContext.Limit)
-			if limit < maxLimit {
-				maxLimit = limit
-			}
-		}
-		var after string = ""
-		archived := false
-
-		if d.EqualsQuals["archived"] != nil {
-			archived = d.EqualsQuals["archived"].GetBoolValue()
-		}
-
-		// get all the property names
-		properties := []string{}
-		for _, property := range companyPropertiesColumns {
-			properties = append(properties, property.Name)
-		}
-
-		for {
-			if after == "" {
-				response, _, err := client.BasicApi.GetPage(context).Limit(maxLimit).Archived(archived).Properties(properties).Execute()
-				if err != nil {
-					plugin.Logger(ctx).Error("hubspot_company.listCompanies", "api_error", err)
-					return nil, err
-				}
-				for _, company := range response.Results {
-					d.StreamListItem(ctx, company)
-
-					// Context can be cancelled due to manual cancellation or the limit has been hit
-					if d.RowsRemaining(ctx) == 0 {
-						return nil, nil
-					}
-				}
-				if !response.Paging.HasNext() {
-					break
-				}
-				after = response.Paging.Next.After
-			} else {
-				response, _, err := client.BasicApi.GetPage(context).Limit(maxLimit).After(after).Archived(archived).Properties(properties).Execute()
-				if err != nil {
-					plugin.Logger(ctx).Error("hubspot_company.listCompanies", "api_error", err)
-					return nil, err
-				}
-				for _, company := range response.Results {
-					d.StreamListItem(ctx, company)
-
-					// Context can be cancelled due to manual cancellation or the limit has been hit
-					if d.RowsRemaining(ctx) == 0 {
-						return nil, nil
-					}
-				}
-				if !response.Paging.HasNext() {
-					break
-				}
-				after = response.Paging.Next.After
-			}
-		}
-
-		return nil, nil
+func listCompanies(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	authorizer, err := connect(ctx, d)
+	if err != nil {
+		plugin.Logger(ctx).Error("hubspot_company.listCompanies", "connection_error", err)
+		return nil, err
 	}
+	context := hubspot.WithAuthorizer(context.Background(), authorizer)
+	client := companies.NewAPIClient(companies.NewConfiguration())
+
+	// Limiting the results
+	var maxLimit int32 = 100
+	if d.QueryContext.Limit != nil {
+		limit := int32(*d.QueryContext.Limit)
+		if limit < maxLimit {
+			maxLimit = limit
+		}
+	}
+	var after string = ""
+	archived := false
+
+	if d.EqualsQuals["archived"] != nil {
+		archived = d.EqualsQuals["archived"].GetBoolValue()
+	}
+
+	for {
+		if after == "" {
+			response, _, err := client.BasicApi.GetPage(context).Limit(maxLimit).Archived(archived).Properties(d.QueryContext.Columns).Execute()
+			if err != nil {
+				plugin.Logger(ctx).Error("hubspot_company.listCompanies", "api_error", err)
+				return nil, err
+			}
+			for _, company := range response.Results {
+				d.StreamListItem(ctx, company)
+
+				// Context can be cancelled due to manual cancellation or the limit has been hit
+				if d.RowsRemaining(ctx) == 0 {
+					return nil, nil
+				}
+			}
+			if !response.Paging.HasNext() {
+				break
+			}
+			after = response.Paging.Next.After
+		} else {
+			response, _, err := client.BasicApi.GetPage(context).Limit(maxLimit).After(after).Archived(archived).Properties(d.QueryContext.Columns).Execute()
+			if err != nil {
+				plugin.Logger(ctx).Error("hubspot_company.listCompanies", "api_error", err)
+				return nil, err
+			}
+			for _, company := range response.Results {
+				d.StreamListItem(ctx, company)
+
+				// Context can be cancelled due to manual cancellation or the limit has been hit
+				if d.RowsRemaining(ctx) == 0 {
+					return nil, nil
+				}
+			}
+			if !response.Paging.HasNext() {
+				break
+			}
+			after = response.Paging.Next.After
+		}
+	}
+
+	return nil, nil
 }
 
 //// HYDRATE FUNCTIONS
 
-func getCompany(ctx context.Context, companyPropertiesColumns []properties.Property) func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	return func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-		id := d.EqualsQualString("id")
+func getCompany(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	id := d.EqualsQualString("id")
 
-		// check if id is empty
-		if id == "" {
-			return nil, nil
-		}
-
-		// get all the property names
-		properties := []string{}
-		for _, property := range companyPropertiesColumns {
-			properties = append(properties, property.Name)
-		}
-
-		authorizer, err := connect(ctx, d)
-		if err != nil {
-			plugin.Logger(ctx).Error("hubspot_company.getCompany", "connection_error", err)
-			return nil, err
-		}
-		context := hubspot.WithAuthorizer(context.Background(), authorizer)
-		client := companies.NewAPIClient(companies.NewConfiguration())
-
-		company, _, err := client.BasicApi.GetByID(context, id).Properties(properties).Execute()
-		if err != nil {
-			plugin.Logger(ctx).Error("hubspot_company.getCompany", "api_error", err)
-			return nil, err
-		}
-
-		return *company, nil
+	// check if id is empty
+	if id == "" {
+		return nil, nil
 	}
+
+	authorizer, err := connect(ctx, d)
+	if err != nil {
+		plugin.Logger(ctx).Error("hubspot_company.getCompany", "connection_error", err)
+		return nil, err
+	}
+	context := hubspot.WithAuthorizer(context.Background(), authorizer)
+	client := companies.NewAPIClient(companies.NewConfiguration())
+
+	company, _, err := client.BasicApi.GetByID(context, id).Properties(d.QueryContext.Columns).Execute()
+	if err != nil {
+		plugin.Logger(ctx).Error("hubspot_company.getCompany", "api_error", err)
+		return nil, err
+	}
+
+	return *company, nil
 }
 
 func companyColumns(companyPropertiesColumns []properties.Property, columns []*plugin.Column) []*plugin.Column {
@@ -191,7 +175,7 @@ func setCompanyDynamicColumns(properties []properties.Property) []*plugin.Column
 		column := &plugin.Column{
 			Name:        property.Name,
 			Description: property.Description,
-			Transform: transform.FromP(extractCompanyProperties, property.Name),
+			Transform:   transform.FromP(extractCompanyProperties, property.Name),
 		}
 		setDynamicColumnTypes(property, column)
 		Columns = append(Columns, column)
