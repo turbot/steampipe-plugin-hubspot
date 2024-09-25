@@ -18,7 +18,7 @@ func tableHubSpotContact(ctx context.Context, contactPropertiesColumns []propert
 		Name:        "hubspot_contact",
 		Description: "List of HubSpot Contacts.",
 		List: &plugin.ListConfig{
-			Hydrate: listContacts(ctx, contactPropertiesColumns),
+			Hydrate: listContacts,
 			KeyColumns: []*plugin.KeyColumn{
 				{
 					Name:    "archived",
@@ -27,7 +27,7 @@ func tableHubSpotContact(ctx context.Context, contactPropertiesColumns []propert
 			},
 		},
 		Get: &plugin.GetConfig{
-			Hydrate:    getContact(ctx, contactPropertiesColumns),
+			Hydrate:    getContact,
 			KeyColumns: plugin.SingleColumn("id"),
 		},
 		Columns: commonColumns(contactColumns(contactPropertiesColumns, []*plugin.Column{
@@ -71,8 +71,7 @@ func tableHubSpotContact(ctx context.Context, contactPropertiesColumns []propert
 
 //// LIST FUNCTION
 
-func listContacts(ctx context.Context, contactPropertiesColumns []properties.Property) func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	return func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listContacts(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 		authorizer, err := connect(ctx, d)
 		if err != nil {
 			plugin.Logger(ctx).Error("hubspot_contact.listContacts", "connection_error", err)
@@ -96,15 +95,9 @@ func listContacts(ctx context.Context, contactPropertiesColumns []properties.Pro
 			archived = d.EqualsQuals["archived"].GetBoolValue()
 		}
 
-		// get all the property names
-		properties := []string{}
-		for _, property := range contactPropertiesColumns {
-			properties = append(properties, property.Name)
-		}
-
 		for {
 			if after == "" {
-				response, _, err := client.BasicApi.GetPage(context).Limit(maxLimit).Archived(archived).Properties(properties).Execute()
+				response, _, err := client.BasicApi.GetPage(context).Limit(maxLimit).Archived(archived).Properties(d.QueryContext.Columns).Execute()
 				if err != nil {
 					plugin.Logger(ctx).Error("hubspot_contact.listContacts", "api_error", err)
 					return nil, err
@@ -122,7 +115,7 @@ func listContacts(ctx context.Context, contactPropertiesColumns []properties.Pro
 				}
 				after = response.Paging.Next.After
 			} else {
-				response, _, err := client.BasicApi.GetPage(context).Limit(maxLimit).After(after).Archived(archived).Properties(properties).Execute()
+				response, _, err := client.BasicApi.GetPage(context).Limit(maxLimit).After(after).Archived(archived).Properties(d.QueryContext.Columns).Execute()
 				if err != nil {
 					plugin.Logger(ctx).Error("hubspot_contact.listContacts", "api_error", err)
 					return nil, err
@@ -143,24 +136,16 @@ func listContacts(ctx context.Context, contactPropertiesColumns []properties.Pro
 		}
 
 		return nil, nil
-	}
 }
 
 //// HYDRATE FUNCTIONS
 
-func getContact(ctx context.Context, contactPropertiesColumns []properties.Property) func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	return func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func getContact(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 		id := d.EqualsQualString("id")
 
 		// check if id is empty
 		if id == "" {
 			return nil, nil
-		}
-
-		// get all the property names
-		properties := []string{}
-		for _, property := range contactPropertiesColumns {
-			properties = append(properties, property.Name)
 		}
 
 		authorizer, err := connect(ctx, d)
@@ -171,14 +156,13 @@ func getContact(ctx context.Context, contactPropertiesColumns []properties.Prope
 		context := hubspot.WithAuthorizer(context.Background(), authorizer)
 		client := contacts.NewAPIClient(contacts.NewConfiguration())
 
-		contact, _, err := client.BasicApi.GetByID(context, id).Properties(properties).Execute()
+		contact, _, err := client.BasicApi.GetByID(context, id).Properties(d.QueryContext.Columns).Execute()
 		if err != nil {
 			plugin.Logger(ctx).Error("hubspot_contact.getContact", "api_error", err)
 			return nil, err
 		}
 
 		return *contact, nil
-	}
 }
 
 func contactColumns(companyPropertiesColumns []properties.Property, columns []*plugin.Column) []*plugin.Column {
