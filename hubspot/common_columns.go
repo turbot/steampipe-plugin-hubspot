@@ -45,7 +45,6 @@ func getPortalIdCacheKey(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 }
 
 func getPortalInfoUncached(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	plugin.Logger(ctx).Error("getPortalIdUncached", "invoked...")
 	authorizer, err := connect(ctx, d)
 	if err != nil {
 		plugin.Logger(ctx).Error("getPortalIdUncached", "connection_error", err)
