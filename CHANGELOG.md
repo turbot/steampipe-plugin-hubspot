@@ -1,5 +1,9 @@
 ## v1.1.0 [2025-04-17]
 
+_Bug fixes_
+
+- Optimized the `hubspot_company`, `hubspot_contact`, `hubspot_deal`, and `hubspot_ticket` tables to fetch only the columns specified in the `SELECT` query, significantly reducing unnecessary API calls. ([#33](https://github.com/turbot/steampipe-plugin-hubspot/pull/33))
+
 _Dependencies_
 
 - Recompiled plugin with Go version `1.23.1`. ([#37](https://github.com/turbot/steampipe-plugin-hubspot/pull/37))
