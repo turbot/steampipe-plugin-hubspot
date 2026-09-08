@@ -71,14 +71,21 @@ func pluginTableDefinitions(ctx context.Context, d *plugin.TableMapData) (map[st
 
 	// Initialize tables
 	tables := map[string]*plugin.Table{
-		"hubspot_blog_post": tableHubSpotBlogPost(ctx),
-		"hubspot_company":   tableHubSpotCompany(ctx, companyPropertiesColumns),
-		"hubspot_contact":   tableHubSpotContact(ctx, contactPropertiesColumns),
-		"hubspot_deal":      tableHubSpotDeal(ctx, dealPropertiesColumns),
-		"hubspot_domain":    tableHubSpotDomain(ctx),
-		"hubspot_hub_db":    tableHubSpotHubDB(ctx),
-		"hubspot_owner":     tableHubSpotOwner(ctx),
-		"hubspot_ticket":    tableHubSpotTicket(ctx, ticketPropertiesColumns),
+		"hubspot_access_token_info": tableHubSpotAccessTokenInfo(ctx),
+		"hubspot_audit_log":         tableHubSpotAuditLog(ctx),
+		"hubspot_blog_post":         tableHubSpotBlogPost(ctx),
+		"hubspot_company":           tableHubSpotCompany(ctx, companyPropertiesColumns),
+		"hubspot_contact":           tableHubSpotContact(ctx, contactPropertiesColumns),
+		"hubspot_deal":              tableHubSpotDeal(ctx, dealPropertiesColumns),
+		"hubspot_domain":            tableHubSpotDomain(ctx),
+		"hubspot_hub_db":            tableHubSpotHubDB(ctx),
+		"hubspot_login_activity":    tableHubSpotLoginActivity(ctx),
+		"hubspot_owner":             tableHubSpotOwner(ctx),
+		"hubspot_security_activity": tableHubSpotSecurityActivity(ctx),
+		"hubspot_team":              tableHubSpotTeam(ctx),
+		"hubspot_ticket":            tableHubSpotTicket(ctx, ticketPropertiesColumns),
+		"hubspot_user":              tableHubSpotUser(ctx),
+		"hubspot_user_role":         tableHubSpotUserRole(ctx),
 	}
 
 	return tables, nil

@@ -2,9 +2,6 @@ package hubspot
 
 import (
 	"context"
-	"encoding/json"
-	"io"
-	"net/http"
 
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/memoize"
@@ -45,45 +42,9 @@ func getPortalIdCacheKey(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 }
 
 func getPortalInfoUncached(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	authorizer, err := connect(ctx, d)
-	if err != nil {
-		plugin.Logger(ctx).Error("getPortalIdUncached", "connection_error", err)
-		return nil, err
-	}
-
-	// Create a new HTTP client
-	client := &http.Client{}
-
-	url := "https://api.hubapi.com/account-info/v3/details"
-
-	// Create a new HTTP request
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		plugin.Logger(ctx).Error("getPortalIdUncached.NewRequestWithContext", err)
-		return nil, err
-	}
-
-	// Add authorization header to the request
-	req.Header.Add("Authorization", "Bearer "+authorizer.Token)
-
-	// Send the request and get a response
-	resp, err := client.Do(req)
-	if err != nil {
-		plugin.Logger(ctx).Error("getPortalIdUncached", "failed to send request", err)
-		return nil, err
-	}
-	defer resp.Body.Close() // Close the response body on the function return
-
-	// Read the response body
-	responseBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		plugin.Logger(ctx).Error("getPortalIdUncached", "Failed to read response body", err)
-		return nil, err
-	}
-
 	var accInfo AccountInfo
-	if err := json.Unmarshal(responseBody, &accInfo); err != nil {
-		plugin.Logger(ctx).Error("getPortalIdUncached", "Error unmarshalling JSON", err)
+	if err := hubspotGet(ctx, d, "/account-info/v3/details", &accInfo); err != nil {
+		plugin.Logger(ctx).Error("getPortalInfoUncached", "api_error", err)
 		return nil, err
 	}
 

@@ -65,6 +65,17 @@ steampipe plugin install hubspot
 | Radius      | Each connection represents a single HubSpot Installation.                                                                                                                               |
 | Resolution  | 1. Credentials explicitly set in a Steampipe config file (`~/.steampipe/config/hubspot.spc`)<br />2. Credentials specified in environment variables, e.g., `HUBSPOT_PRIVATE_APP_TOKEN`. |
 
+The identity and audit tables require additional scopes on the private app token. If a scope is missing, the corresponding table returns a permission error rather than an empty result:
+
+| Tables                                             | Required scope                |
+| -------------------------------------------------- | ----------------------------- |
+| `hubspot_user`, `hubspot_user_role`                | `settings.users.read`         |
+| `hubspot_team`                                      | `settings.users.teams.read`   |
+| `hubspot_audit_log`                                 | `content`                     |
+| `hubspot_login_activity`, `hubspot_security_activity` | `account-info.security.read`  |
+
+The `hubspot_access_token_info` table introspects the token itself and requires no additional scope.
+
 ### Configuration
 
 Installing the latest hubspot plugin will create a config file (`~/.steampipe/config/hubspot.spc`) with a single connection named `hubspot`:

@@ -5,4 +5,10 @@ connection "hubspot" {
   # Get your Private APP token from HubSpot https://developers.hubspot.com/docs/api/private-apps.
   # Can also be set with the `HUBSPOT_PRIVATE_APP_TOKEN` environment variable.
   # private_app_token = "pat-na1-70271006-11d8-4a5d-9169-b12f4327e5b"
+
+  # The identity and audit tables require additional scopes on the token:
+  #   settings.users.read        -> hubspot_user, hubspot_user_role
+  #   settings.users.teams.read  -> hubspot_team
+  #   content                    -> hubspot_audit_log
+  #   account-info.security.read -> hubspot_login_activity, hubspot_security_activity
 }
