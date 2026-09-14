@@ -12,12 +12,12 @@ import (
 
 //// TABLE DEFINITION
 
-func tableHubSpotAuditLog(ctx context.Context) *plugin.Table {
+func tableHubSpotCmsAuditLog(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "hubspot_audit_log",
+		Name:        "hubspot_cms_audit_log",
 		Description: "History of CMS content changes (create, update, publish, delete) in the HubSpot account.",
 		List: &plugin.ListConfig{
-			Hydrate: listAuditLogs,
+			Hydrate: listCmsAuditLogs,
 			KeyColumns: []*plugin.KeyColumn{
 				{
 					Name:    "user_id",
@@ -85,10 +85,10 @@ func tableHubSpotAuditLog(ctx context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listAuditLogs(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listCmsAuditLogs(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	authorizer, err := connect(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("hubspot_audit_log.listAuditLogs", "connection_error", err)
+		plugin.Logger(ctx).Error("hubspot_cms_audit_log.listCmsAuditLogs", "connection_error", err)
 		return nil, err
 	}
 	context := hubspot.WithAuthorizer(context.Background(), authorizer)
@@ -121,7 +121,7 @@ func listAuditLogs(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 
 		response, _, err := req.Execute()
 		if err != nil {
-			plugin.Logger(ctx).Error("hubspot_audit_log.listAuditLogs", "api_error", err)
+			plugin.Logger(ctx).Error("hubspot_cms_audit_log.listCmsAuditLogs", "api_error", err)
 			return nil, err
 		}
 

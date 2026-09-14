@@ -8,7 +8,7 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
-type hubspotAccessTokenInfo struct {
+type hubspotAccessToken struct {
 	UserId      int64    `json:"userId"`
 	HubId       int64    `json:"hubId"`
 	AppId       int64    `json:"appId"`
@@ -18,12 +18,12 @@ type hubspotAccessTokenInfo struct {
 
 //// TABLE DEFINITION
 
-func tableHubSpotAccessTokenInfo(ctx context.Context) *plugin.Table {
+func tableHubSpotAccessToken(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "hubspot_access_token_info",
+		Name:        "hubspot_access_token",
 		Description: "Details about the private app access token in use, including its granted scopes.",
 		List: &plugin.ListConfig{
-			Hydrate: listAccessTokenInfo,
+			Hydrate: listAccessToken,
 		},
 		Columns: commonColumns([]*plugin.Column{
 			{
@@ -65,29 +65,29 @@ func tableHubSpotAccessTokenInfo(ctx context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listAccessTokenInfo(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listAccessToken(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	authorizer, err := connect(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("hubspot_access_token_info.listAccessTokenInfo", "connection_error", err)
+		plugin.Logger(ctx).Error("hubspot_access_token.listAccessToken", "connection_error", err)
 		return nil, err
 	}
 
 	body := map[string]string{"tokenKey": authorizer.Token}
 
-	var info hubspotAccessTokenInfo
-	if err := hubspotPost(ctx, d, "/oauth/v2/private-apps/get/access-token-info", body, &info); err != nil {
+	var token hubspotAccessToken
+	if err := hubspotPost(ctx, d, "/oauth/v2/private-apps/get/access-token-info", body, &token); err != nil {
 		// The introspection endpoint is not served on every account/region and
 		// returns 404 when unavailable. Treat that as no rows so it never breaks
 		// the rest of the plugin, but surface any other failure.
 		if shouldIgnoreErrors([]string{"404"})(ctx, d, h, err) {
-			plugin.Logger(ctx).Warn("hubspot_access_token_info.listAccessTokenInfo", "token_info_unavailable", err)
+			plugin.Logger(ctx).Warn("hubspot_access_token.listAccessToken", "token_unavailable", err)
 			return nil, nil
 		}
-		plugin.Logger(ctx).Error("hubspot_access_token_info.listAccessTokenInfo", "api_error", err)
+		plugin.Logger(ctx).Error("hubspot_access_token.listAccessToken", "api_error", err)
 		return nil, err
 	}
 
-	d.StreamListItem(ctx, info)
+	d.StreamListItem(ctx, token)
 
 	return nil, nil
 }

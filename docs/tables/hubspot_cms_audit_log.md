@@ -1,9 +1,9 @@
 ---
-title: "Steampipe Table: hubspot_audit_log - Query HubSpot CMS Audit Logs using SQL"
+title: "Steampipe Table: hubspot_cms_audit_log - Query HubSpot CMS Audit Logs using SQL"
 description: "Allows users to query HubSpot CMS content-change audit logs, showing who created, updated, published, or deleted CMS objects."
 ---
 
-# Table: hubspot_audit_log - Query HubSpot CMS Audit Logs using SQL
+# Table: hubspot_cms_audit_log - Query HubSpot CMS Audit Logs using SQL
 
 HubSpot CMS Audit Logs record changes made to CMS content objects such as blogs, landing pages, domains, and HubDB tables. Each entry captures the object affected, the type of change (created, updated, published, deleted, unpublished, restored), the user responsible, and when it happened.
 
@@ -11,7 +11,7 @@ This table covers **CMS content history only**. It is not a login or security-se
 
 ## Table Usage Guide
 
-The `hubspot_audit_log` table provides insights into content changes within a HubSpot account. As a content administrator or auditor, you can use this table to see who changed what and when across your CMS objects. This table requires the `content` scope on the private app token. The results can be filtered by `user_id`, `object_type`, and `event`.
+The `hubspot_cms_audit_log` table provides insights into content changes within a HubSpot account. As a content administrator or auditor, you can use this table to see who changed what and when across your CMS objects. This table requires the `content` scope on the private app token. The results can be filtered by `user_id`, `object_type`, and `event`.
 
 Note that this endpoint also requires a CMS Hub or Marketing Hub Professional or Enterprise subscription. On accounts without a qualifying tier, the HubSpot API returns a `MISSING_SCOPES` error even when the `content` scope is granted.
 
@@ -28,7 +28,7 @@ select
   object_type,
   object_name
 from
-  hubspot_audit_log
+  hubspot_cms_audit_log
 order by
   timestamp desc
 limit 10;
@@ -42,7 +42,7 @@ select
   object_type,
   object_name
 from
-  hubspot_audit_log
+  hubspot_cms_audit_log
 order by
   timestamp desc
 limit 10;
@@ -58,7 +58,7 @@ select
   object_type,
   object_name
 from
-  hubspot_audit_log
+  hubspot_cms_audit_log
 where
   event = 'DELETED'
 order by
@@ -72,7 +72,7 @@ select
   object_type,
   object_name
 from
-  hubspot_audit_log
+  hubspot_cms_audit_log
 where
   event = 'DELETED'
 order by
@@ -89,7 +89,7 @@ select
   object_type,
   object_name
 from
-  hubspot_audit_log
+  hubspot_cms_audit_log
 where
   user_id = '12345678'
 order by
@@ -103,7 +103,7 @@ select
   object_type,
   object_name
 from
-  hubspot_audit_log
+  hubspot_cms_audit_log
 where
   user_id = '12345678'
 order by
@@ -118,7 +118,7 @@ select
   event,
   count(*) as change_count
 from
-  hubspot_audit_log
+  hubspot_cms_audit_log
 group by
   event
 order by
@@ -130,7 +130,7 @@ select
   event,
   count(*) as change_count
 from
-  hubspot_audit_log
+  hubspot_cms_audit_log
 group by
   event
 order by

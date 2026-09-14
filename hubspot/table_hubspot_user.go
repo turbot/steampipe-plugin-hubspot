@@ -19,7 +19,6 @@ type hubspotUser struct {
 	RoleIds          []string `json:"roleIds"`
 	PrimaryTeamId    string   `json:"primaryTeamId"`
 	SecondaryTeamIds []string `json:"secondaryTeamIds"`
-	SeatNames        []string `json:"seatNames"`
 	SuperAdmin       bool     `json:"superAdmin"`
 }
 
@@ -87,11 +86,6 @@ func tableHubSpotUser(ctx context.Context) *plugin.Table {
 				Name:        "secondary_team_ids",
 				Type:        proto.ColumnType_JSON,
 				Description: "The IDs of the user's secondary teams.",
-			},
-			{
-				Name:        "seat_names",
-				Type:        proto.ColumnType_JSON,
-				Description: "The names of the seats assigned to the user.",
 			},
 
 			/// Steampipe standard columns

@@ -65,16 +65,22 @@ steampipe plugin install hubspot
 | Radius      | Each connection represents a single HubSpot Installation.                                                                                                                               |
 | Resolution  | 1. Credentials explicitly set in a Steampipe config file (`~/.steampipe/config/hubspot.spc`)<br />2. Credentials specified in environment variables, e.g., `HUBSPOT_PRIVATE_APP_TOKEN`. |
 
-The identity and audit tables require additional scopes on the private app token. If a scope is missing, the corresponding table returns a permission error rather than an empty result:
+Each table needs the private app token to carry the scope listed below. If a scope is missing, the table returns a permission error rather than an empty result.
 
-| Tables                                             | Required scope                |
-| -------------------------------------------------- | ----------------------------- |
-| `hubspot_user`, `hubspot_user_role`                | `settings.users.read`         |
-| `hubspot_team`                                      | `settings.users.teams.read`   |
-| `hubspot_audit_log`                                 | `content`                     |
-| `hubspot_login_activity`, `hubspot_security_activity` | `account-info.security.read`  |
-
-The `hubspot_access_token_info` table introspects the token itself and requires no additional scope.
+| Tables                                                                            | Required scope                                                               |
+| --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `hubspot_contact`                                                                 | `crm.objects.contacts.read` (`crm.schemas.contacts.read` for custom properties)   |
+| `hubspot_company`                                                                 | `crm.objects.companies.read` (`crm.schemas.companies.read` for custom properties) |
+| `hubspot_deal`                                                                    | `crm.objects.deals.read` (`crm.schemas.deals.read` for custom properties)         |
+| `hubspot_ticket`                                                                  | `tickets`                                                                    |
+| `hubspot_owner`                                                                   | `crm.objects.owners.read`                                                    |
+| `hubspot_blog_post`, `hubspot_cms_audit_log`                                      | `content`                                                                    |
+| `hubspot_domain`                                                                  | `cms.domains.read`                                                           |
+| `hubspot_hub_db`                                                                  | `hubdb`                                                                      |
+| `hubspot_user`, `hubspot_user_role`                                               | `settings.users.read`                                                        |
+| `hubspot_team`                                                                    | `settings.users.teams.read`                                                  |
+| `hubspot_login_activity`, `hubspot_security_activity`                             | `account-info.security.read`                                                 |
+| `hubspot_access_token`                                                            | None, the table introspects the token itself                                 |
 
 ### Configuration
 

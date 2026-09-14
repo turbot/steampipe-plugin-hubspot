@@ -71,9 +71,9 @@ func pluginTableDefinitions(ctx context.Context, d *plugin.TableMapData) (map[st
 
 	// Initialize tables
 	tables := map[string]*plugin.Table{
-		"hubspot_access_token_info": tableHubSpotAccessTokenInfo(ctx),
-		"hubspot_audit_log":         tableHubSpotAuditLog(ctx),
+		"hubspot_access_token":      tableHubSpotAccessToken(ctx),
 		"hubspot_blog_post":         tableHubSpotBlogPost(ctx),
+		"hubspot_cms_audit_log":     tableHubSpotCmsAuditLog(ctx),
 		"hubspot_company":           tableHubSpotCompany(ctx, companyPropertiesColumns),
 		"hubspot_contact":           tableHubSpotContact(ctx, contactPropertiesColumns),
 		"hubspot_deal":              tableHubSpotDeal(ctx, dealPropertiesColumns),

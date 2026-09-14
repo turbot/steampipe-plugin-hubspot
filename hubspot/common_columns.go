@@ -44,8 +44,11 @@ func getPortalIdCacheKey(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 func getPortalInfoUncached(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	var accInfo AccountInfo
 	if err := hubspotGet(ctx, d, "/account-info/v3/details", &accInfo); err != nil {
+		// portal_id is a connection key column hydrated for every table, so keep
+		// this lookup behaviour-neutral: log and return the empty AccountInfo
+		// rather than failing every table on a transient account-info error.
 		plugin.Logger(ctx).Error("getPortalInfoUncached", "api_error", err)
-		return nil, err
+		return accInfo, nil
 	}
 
 	return accInfo, nil

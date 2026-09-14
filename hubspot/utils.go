@@ -32,6 +32,20 @@ type hubspotNextPage struct {
 	Link  string `json:"link"`
 }
 
+// hubspotAPIError carries the HTTP status code from a non-2xx HubSpot response
+// so the ignore/retry predicates can match on the code itself rather than a
+// substring of the response body (whose correlationId can spuriously contain
+// "404" or "429").
+type hubspotAPIError struct {
+	Path       string
+	StatusCode int
+	Body       string
+}
+
+func (e *hubspotAPIError) Error() string {
+	return fmt.Sprintf("hubspot API %s returned %d: %s", e.Path, e.StatusCode, e.Body)
+}
+
 // hubspotGet performs an authenticated GET against the HubSpot API and
 // unmarshals a successful JSON response into out.
 func hubspotGet(ctx context.Context, d *plugin.QueryData, path string, out any) error {
@@ -85,7 +99,7 @@ func hubspotDo(ctx context.Context, d *plugin.QueryData, method, path string, bo
 	}
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return fmt.Errorf("hubspot API %s returned %d: %s", path, resp.StatusCode, string(responseBody))
+		return &hubspotAPIError{Path: path, StatusCode: resp.StatusCode, Body: string(responseBody)}
 	}
 
 	if out != nil {
