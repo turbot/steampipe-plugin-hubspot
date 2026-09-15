@@ -17,8 +17,6 @@ engines: ["steampipe", "sqlite", "postgres", "export"]
 
 [HubSpot](https://www.hubspot.com/) is a CRM platform with all the software, integrations, and resources you need to connect marketing, sales, content management, and customer service. Each product in the platform is powerful on its own, but the real magic happens when you use them together.
 
-
-
 List your HubSpot deals:
 
 ```sql
@@ -61,7 +59,7 @@ steampipe plugin install hubspot
 | Item        | Description                                                                                                                                                                             |
 | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Credentials | HubSpot requires a [Private App Token](https://developers.hubspot.com/docs/api/private-apps) for all requests.                                                                          |
-| Permissions | The permission scope of Private App Tokens is set by the Admin at the creation time of the tokens.                                                                                      |
+| Permissions | Private app tokens only carry the scopes selected when the token is created. Grant the scopes listed in the table below for the tables you want to query.                               |
 | Radius      | Each connection represents a single HubSpot Installation.                                                                                                                               |
 | Resolution  | 1. Credentials explicitly set in a Steampipe config file (`~/.steampipe/config/hubspot.spc`)<br />2. Credentials specified in environment variables, e.g., `HUBSPOT_PRIVATE_APP_TOKEN`. |
 
