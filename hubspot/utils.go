@@ -1,15 +1,115 @@
 package hubspot
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
+	"io"
+	"net/http"
 	"os"
+	"time"
 
 	hubspot "github.com/clarkmcc/go-hubspot"
 	"github.com/clarkmcc/go-hubspot/generated/v3/properties"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 )
+
+const hubspotAPIBaseURL = "https://api.hubapi.com"
+
+var hubspotHTTPClient = &http.Client{Timeout: 60 * time.Second}
+
+// hubspotPaging models the shared `paging` envelope returned by HubSpot v3
+// cursor-paginated endpoints that this plugin calls over raw HTTP.
+type hubspotPaging struct {
+	Next *hubspotNextPage `json:"next"`
+}
+
+type hubspotNextPage struct {
+	After string `json:"after"`
+	Link  string `json:"link"`
+}
+
+// hubspotAPIError carries the HTTP status code from a non-2xx HubSpot response
+// so the ignore/retry predicates can match on the code itself rather than a
+// substring of the response body (whose correlationId can spuriously contain
+// "404" or "429").
+type hubspotAPIError struct {
+	Path       string
+	StatusCode int
+	Body       string
+}
+
+func (e *hubspotAPIError) Error() string {
+	return fmt.Sprintf("hubspot API %s returned %d: %s", e.Path, e.StatusCode, e.Body)
+}
+
+// hubspotGet performs an authenticated GET against the HubSpot API and
+// unmarshals a successful JSON response into out.
+func hubspotGet(ctx context.Context, d *plugin.QueryData, path string, out any) error {
+	return hubspotDo(ctx, d, http.MethodGet, path, nil, out)
+}
+
+// hubspotPost performs an authenticated POST against the HubSpot API, sending
+// body as JSON and unmarshaling a successful JSON response into out.
+func hubspotPost(ctx context.Context, d *plugin.QueryData, path string, body any, out any) error {
+	return hubspotDo(ctx, d, http.MethodPost, path, body, out)
+}
+
+// hubspotDo is the single Bearer-token HTTP path shared by every table that
+// the generated library does not cover. It exists to check the response status:
+// a non-2xx must surface as an error whose text contains the status code, so the
+// plugin's DefaultRetryConfig ("429") and DefaultIgnoreConfig ("404") can act on
+// it and a missing-scope 403 fails loudly instead of yielding empty rows.
+func hubspotDo(ctx context.Context, d *plugin.QueryData, method, path string, body any, out any) error {
+	authorizer, err := connect(ctx, d)
+	if err != nil {
+		return err
+	}
+
+	var reqBody io.Reader
+	if body != nil {
+		payload, err := json.Marshal(body)
+		if err != nil {
+			return err
+		}
+		reqBody = bytes.NewReader(payload)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, method, hubspotAPIBaseURL+path, reqBody)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Authorization", "Bearer "+authorizer.Token)
+	if body != nil {
+		req.Header.Set("Content-Type", "application/json")
+	}
+
+	resp, err := hubspotHTTPClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return &hubspotAPIError{Path: path, StatusCode: resp.StatusCode, Body: string(responseBody)}
+	}
+
+	if out != nil {
+		if err := json.Unmarshal(responseBody, out); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
 
 func connect(ctx context.Context, d *plugin.QueryData) (*hubspot.TokenAuthorizer, error) {
 	conn, err := connectAppTokenCached(ctx, d, nil)
