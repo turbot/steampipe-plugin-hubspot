@@ -365,7 +365,7 @@ func listDomains(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData
 			maxLimit = limit
 		}
 	}
-	var after string = ""
+	var after string
 
 	for {
 		if after == "" {

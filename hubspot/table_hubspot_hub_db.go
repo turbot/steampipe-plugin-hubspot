@@ -152,7 +152,7 @@ func listHubDBs(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData)
 			maxLimit = limit
 		}
 	}
-	var after string = ""
+	var after string
 	archived := false
 
 	if d.EqualsQuals["archived"] != nil {

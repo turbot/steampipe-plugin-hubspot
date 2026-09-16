@@ -91,7 +91,7 @@ func hubspotDo(ctx context.Context, d *plugin.QueryData, method, path string, bo
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {

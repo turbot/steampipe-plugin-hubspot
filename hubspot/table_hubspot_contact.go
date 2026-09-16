@@ -88,7 +88,7 @@ func listContacts(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDat
 				maxLimit = limit
 			}
 		}
-		var after string = ""
+		var after string
 		archived := false
 
 		if d.EqualsQuals["archived"] != nil {
