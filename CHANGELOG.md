@@ -1,3 +1,23 @@
+## v1.3.0 [2026-09-16]
+
+Thanks to [@niranjan94](https://github.com/niranjan94) for contributing the new IAM, identity, and security audit tables!
+
+_What's new?_
+
+- New tables added
+  - [hubspot_access_token](https://hub.steampipe.io/plugins/turbot/hubspot/tables/hubspot_access_token) ([#51](https://github.com/turbot/steampipe-plugin-hubspot/pull/51))
+  - [hubspot_cms_audit_log](https://hub.steampipe.io/plugins/turbot/hubspot/tables/hubspot_cms_audit_log) ([#51](https://github.com/turbot/steampipe-plugin-hubspot/pull/51))
+  - [hubspot_login_activity](https://hub.steampipe.io/plugins/turbot/hubspot/tables/hubspot_login_activity) ([#51](https://github.com/turbot/steampipe-plugin-hubspot/pull/51))
+  - [hubspot_security_activity](https://hub.steampipe.io/plugins/turbot/hubspot/tables/hubspot_security_activity) ([#51](https://github.com/turbot/steampipe-plugin-hubspot/pull/51))
+  - [hubspot_team](https://hub.steampipe.io/plugins/turbot/hubspot/tables/hubspot_team) ([#51](https://github.com/turbot/steampipe-plugin-hubspot/pull/51))
+  - [hubspot_user](https://hub.steampipe.io/plugins/turbot/hubspot/tables/hubspot_user) ([#51](https://github.com/turbot/steampipe-plugin-hubspot/pull/51))
+  - [hubspot_user_role](https://hub.steampipe.io/plugins/turbot/hubspot/tables/hubspot_user_role) ([#51](https://github.com/turbot/steampipe-plugin-hubspot/pull/51))
+
+_Dependencies_
+
+- Recompiled plugin with Go version `1.26`. ([#44](https://github.com/turbot/steampipe-plugin-hubspot/pull/44))
+- Recompiled plugin with [steampipe-plugin-sdk v6.1.0](https://github.com/turbot/steampipe-plugin-sdk/blob/develop/CHANGELOG.md#v610-2026-08-18) that fixes data races on connection config access and in the in-process query path.
+
 ## v1.2.0 [2025-10-13]
 
 _Dependencies_
