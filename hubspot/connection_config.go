@@ -1,7 +1,7 @@
 package hubspot
 
 import (
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
 )
 
 type hubSpotConfig struct {
@@ -14,9 +14,9 @@ func ConfigInstance() interface{} {
 
 // GetConfig :: retrieve and cast connection config from query data
 func GetConfig(connection *plugin.Connection) hubSpotConfig {
-	if connection == nil || connection.Config == nil {
+	if connection == nil || connection.GetConfig() == nil {
 		return hubSpotConfig{}
 	}
-	config, _ := connection.Config.(hubSpotConfig)
+	config, _ := connection.GetConfig().(hubSpotConfig)
 	return config
 }

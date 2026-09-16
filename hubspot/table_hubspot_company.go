@@ -6,9 +6,9 @@ import (
 	hubspot "github.com/clarkmcc/go-hubspot"
 	"github.com/clarkmcc/go-hubspot/generated/v3/companies"
 	"github.com/clarkmcc/go-hubspot/generated/v3/properties"
-	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v6/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin/transform"
 )
 
 //// TABLE DEFINITION
